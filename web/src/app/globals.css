@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────
+   Contxt — Design System
+
+   Brand    : Black & white
+   Base     : Off-white     #F8F7F2
+   Ink      : Warm black    #18170F
+   Display  : Syne 800 (geometric grotesque)
+   Accent   : Cormorant Garamond italic (italic contrast only)
+   Body     : DM Sans
+─────────────────────────────────────────────────────────────────── */
+
+:root {
+  --paper:     #F8F7F2;
+  --paper-2:   #F2F0E9;
+  --surface:   #EDECEA;
+  --rule:      #D5D3CA;
+
+  --ink:       #18170F;
+  --ink-70:    #3D3C33;
+  --ink-50:    #69685D;
+  --ink-30:    #9D9B8E;
+  --ink-15:    #CCCABF;
+  --ink-08:    #DDDBD3;
+
+  --dark:      #141310;
+  --dark-2:    #1C1B17;
+  --dark-3:    #262420;
+  --dark-rule: rgba(255, 255, 255, 0.06);
+}
+
+@theme inline {
+  --font-sans:    var(--font-dm-sans),    system-ui, sans-serif;
+  --font-display: var(--font-syne),       "Syne", system-ui, sans-serif;
+  --font-serif:   var(--font-cormorant),  "Cormorant Garamond", Georgia, serif;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: rgba(24,23,15,0.1); color: var(--ink); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ink-08); border-radius: 99px; }
+
+/* ─── CSS custom property — required for smooth border-beam ─────── */
+@property --beam-pos {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ─── Animations ────────────────────────────────────────────────── */
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float-idle {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-10px); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+@keyframes nav-pill-enter {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes border-beam {
+  to { --beam-pos: 360deg; }
+}
+
+@keyframes beam-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+@keyframes msg-in-right {
+  from { opacity: 0; transform: translateX(14px) translateY(6px); }
+  to   { opacity: 1; transform: translateX(0) translateY(0); }
+}
+
+@keyframes msg-in-left {
+  from { opacity: 0; transform: translateX(-14px) translateY(6px); }
+  to   { opacity: 1; transform: translateX(0) translateY(0); }
+}
+
+@keyframes mockup-enter {
+  from { opacity: 0; transform: translateX(50px) scale(0.95); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ─── Navigation ────────────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-50);
+  text-decoration: none;
+  transition: color 0.2s;
+  padding-bottom: 2px;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover { color: var(--ink); }
+.nav-link:hover::after { transform: scaleX(1); }
+
+/* ─── Buttons ───────────────────────────────────────────────────── */
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #111;
+  color: #f8f7f2;
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  border-radius: 999px;
+  padding: 0.75rem 1.625rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background   0.2s ease,
+    transform    0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow   0.2s ease;
+}
+.cta-primary:hover {
+  background: #2a2a2a;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+.cta-primary:active { transform: translateY(0) scale(0.98); box-shadow: none; }
+
+.cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-50);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.cta-ghost:hover { color: var(--ink); }
+
+/* ─── Section label ─────────────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-syne), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-30);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+/* ─── Pillar hover ──────────────────────────────────────────────── */
+.pillar-item { transition: opacity 0.2s; }
+.pillar-item:hover { opacity: 0.75; }
+
+/* ─── Border beam — glowing animated border ─────────────────────── */
+.beam-border {
+  padding: 1px;
+  border-radius: 16px;
+  background: conic-gradient(
+    from var(--beam-pos) at 50% 50%,
+    rgba(255, 255, 255, 0.04) 0deg,
+    rgba(255, 255, 255, 0.04) 332deg,
+    rgba(255, 255, 255, 0.6)  350deg,
+    rgba(255, 255, 255, 0.04) 360deg
+  );
+  animation: border-beam 6s linear infinite;
+}
+
+/* Panel variant — for large auth / marketing side panels */
+.beam-border-panel {
+  padding: 1px;
+  border-radius: 22px;
+  background: conic-gradient(
+    from var(--beam-pos) at 50% 50%,
+    rgba(255, 255, 255, 0.03) 0deg,
+    rgba(255, 255, 255, 0.03) 308deg,
+    rgba(255, 255, 255, 0.45) 328deg,
+    rgba(255, 255, 255, 0.12) 344deg,
+    rgba(255, 255, 255, 0.03) 360deg
+  );
+  animation: border-beam 9s linear infinite;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Pill variant — for rounded CTA buttons on light backgrounds */
+.beam-border-pill {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: 999px;
+  background: conic-gradient(
+    from var(--beam-pos) at 50% 50%,
+    #0d0d0d 0deg,
+    #0d0d0d 290deg,
+    rgba(120, 120, 120, 0.55) 315deg,
+    rgba(255, 255, 255, 1)    336deg,
+    rgba(120, 120, 120, 0.55) 355deg,
+    #0d0d0d 360deg
+  );
+  animation: border-beam 4s linear infinite;
+}

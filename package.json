@@ -1,9 +1,23 @@
 {
   "name": "contxt",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "dev:all": "bun run dev & cd web && bun run dev",
+    "start": "bun src/index.ts",
+    "start:all": "bun run start & cd web && bun run start",
+    "db:push": "bunx drizzle-kit push",
+    "db:generate": "bunx drizzle-kit generate",
+    "db:migrate": "bunx drizzle-kit migrate",
+    "db:studio": "bunx drizzle-kit studio",
+    "web:dev": "cd web && bun run dev",
+    "web:build": "cd web && bun run build",
+    "web:start": "cd web && bun run start"
+  },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/node": "^25.9.2",
     "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.3"
   },
@@ -12,9 +26,11 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.102.0",
-    "@supabase/supabase-js": "^2.108.0",
     "@upstash/redis": "^1.38.0",
     "drizzle-orm": "^0.45.2",
-    "hono": "^4.12.24"
+    "hono": "^4.12.24",
+    "pino": "^10.3.1",
+    "postgres": "^3.4.9",
+    "zod": "^4.4.3"
   }
 }
