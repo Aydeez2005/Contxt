@@ -122,6 +122,65 @@ export async function patchMember(c: Context) {
   return c.json({ ok: true });
 }
 
+const INVITE_TTL = 60 * 60 * 24 * 7; // 7 days
+
+function inviteKey(token: string) {
+  return `invite:${token}`;
+}
+
+export async function createInviteLink(c: Context) {
+  const slug = c.req.param("slug");
+  if (!slug) return c.json({ error: "Missing slug." }, 400);
+
+  const org = await requireOrg(slug);
+  if (!org) return c.json({ error: "Org not found." }, 404);
+
+  const token = crypto.randomUUID().replace(/-/g, "");
+  await redis.set(inviteKey(token), { orgId: org.id, slug }, { ex: INVITE_TTL });
+
+  const botUsername = org.telegramBotUsername ?? "Cotxtbot";
+  const link = `https://t.me/${botUsername}?start=${token}`;
+
+  return c.json({ link, expiresIn: "7 days" });
+}
+
+export async function redeemInvite(
+  token: string,
+  telegramId: number,
+  displayName: string | null,
+  telegramUsername: string | null
+): Promise<{ orgId: string; memberId: string } | null> {
+  const stored = await redis.get<{ orgId: string; slug: string }>(inviteKey(token));
+  if (!stored) return null;
+
+  await redis.del(inviteKey(token));
+
+  const existing = await db
+    .select({ id: members.id })
+    .from(members)
+    .where(and(eq(members.orgId, stored.orgId), eq(members.telegramId, telegramId)))
+    .limit(1);
+
+  if (existing[0]) return { orgId: stored.orgId, memberId: existing[0].id };
+
+  const inserted = await db
+    .insert(members)
+    .values({
+      orgId: stored.orgId,
+      telegramId,
+      displayName,
+      telegramUsername,
+      role: "member",
+      isActive: true,
+      joinedAt: new Date(),
+    })
+    .returning({ id: members.id });
+
+  await redis.del(`tenant:${telegramId}`);
+
+  return { orgId: stored.orgId, memberId: inserted[0].id };
+}
+
 export async function removeMember(c: Context) {
   const slug = c.req.param("slug");
   const memberId = c.req.param("memberId");
