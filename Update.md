@@ -54,3 +54,9 @@
 
 ---
 
+## 2026-06-11
+
+### Session
+- Ran `bunx drizzle-kit push` to apply new DB constraints — failed in piped shell (needs TTY). Run manually in terminal to apply the two new unique constraints (`member_snapshots`, `org_embeddings`).
+- Verified both backend (port 3000) and frontend (port 3001) running cleanly
+- Reviewed all pages live: dashboard overview, members (invite link card visible), integrations (OAuth buttons working), graph (members + tool nodes rendering)
