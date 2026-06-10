@@ -9,6 +9,7 @@ import { toolDefinitions } from "./tools/index.ts";
 import { whoIsWorkingOn } from "./tools/whoIsWorkingOn.ts";
 import { memberStatus } from "./tools/memberStatus.ts";
 import { orgSearch } from "./tools/orgSearch.ts";
+import { notionSearch } from "./tools/notionSearch.ts";
 import type { OrgContext } from "./types.ts";
 import type { MessageParam } from "@anthropic-ai/sdk/resources/messages.js";
 
@@ -29,6 +30,8 @@ async function dispatchTool(
       return memberStatus(input, ctx);
     case "orgSearch":
       return orgSearch(input, ctx);
+    case "notionSearch":
+      return notionSearch(input, ctx);
     default:
       return { error: `Unknown tool: ${name}` };
   }

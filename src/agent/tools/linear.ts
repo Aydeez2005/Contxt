@@ -1,4 +1,5 @@
 import type { OrgIntegration } from "../../db/schema.ts";
+import { getValidToken } from "../../lib/tokenRefresh.ts";
 
 export type LinearIssue = {
   id: string;
@@ -22,10 +23,11 @@ export async function getAssignedIssues(
     }
   `;
 
+  const token = await getValidToken(integration);
   const res = await fetch("https://api.linear.app/graphql", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${integration.accessToken}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query }),

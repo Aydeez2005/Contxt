@@ -19,6 +19,20 @@ export default function IntegrationsPage({ params }: { params: Promise<{ slug: s
   const [connectToken, setConnectToken] = useState("");
   const [connectLoading, setConnectLoading] = useState(false);
 
+  // Services that use the OAuth redirect flow
+  const OAUTH_SERVICES = new Set(["jira", "linear", "slack", "github", "gcal"]);
+
+  function handleConnectClick(service: string) {
+    if (OAUTH_SERVICES.has(service)) {
+      window.open(api.oauthConnectUrl(slug, service), "_blank", "noopener,noreferrer");
+      // Reload integrations after a short delay to pick up the newly connected service
+      setTimeout(() => reload(), 5000);
+    } else {
+      setConnectService(service);
+      setConnectToken("");
+    }
+  }
+
   async function handleConnect(e: React.FormEvent) {
     e.preventDefault();
     if (!connectService) return;
@@ -78,7 +92,7 @@ export default function IntegrationsPage({ params }: { params: Promise<{ slug: s
                 </div>
                 <ActionBtn
                   variant={connected ? "ghost" : "default"}
-                  onClick={() => { setConnectService(service); setConnectToken(""); }}
+                  onClick={() => handleConnectClick(service)}
                 >
                   {connected ? "Update" : "Connect"}
                 </ActionBtn>

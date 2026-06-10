@@ -1,4 +1,5 @@
 import type { OrgIntegration } from "../../db/schema.ts";
+import { getValidToken } from "../../lib/tokenRefresh.ts";
 
 export type GitHubPR = {
   id: number;
@@ -18,11 +19,12 @@ export async function getOpenPRs(
   const meta = integration.metadata as { org?: string } | null;
   const orgName = meta?.org ?? "";
 
+  const token = await getValidToken(integration);
   const res = await fetch(
     `https://api.github.com/search/issues?q=type:pr+state:open+author:${githubLogin}${orgName ? `+org:${orgName}` : ""}&per_page=5`,
     {
       headers: {
-        Authorization: `Bearer ${integration.accessToken}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github+json",
       },
     }

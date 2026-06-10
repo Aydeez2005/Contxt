@@ -51,4 +51,19 @@ export const toolDefinitions: Tool[] = [
       required: ["query"],
     },
   },
+  {
+    name: "notionSearch",
+    description:
+      "Search Notion pages directly for docs, meeting notes, decisions, or any written content in the workspace. Use when the question is specifically about Notion content.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description: "The search query to find relevant Notion pages.",
+        },
+      },
+      required: ["query"],
+    },
+  },
 ];

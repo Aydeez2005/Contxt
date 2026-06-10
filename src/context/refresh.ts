@@ -3,6 +3,7 @@ import { db } from "../db/client.ts";
 import { organizations, members } from "../db/schema.ts";
 import { orgIntegrations } from "../db/schema.ts";
 import { buildMemberSnapshot } from "./memberSnapshot.ts";
+import { indexOrgContent } from "./indexEmbeddings.ts";
 import { logger } from "../lib/logger.ts";
 
 const INTERVAL_MS = 10 * 60 * 1000;
@@ -35,6 +36,10 @@ export function startRefreshLoop() {
                 )
             )
           )
+        );
+
+        await indexOrgContent(org.id, integrations).catch((e) =>
+          logger.warn({ err: e, orgId: org.id }, "embedding indexing failed")
         );
       }
 

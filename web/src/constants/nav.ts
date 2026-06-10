@@ -1,4 +1,4 @@
-import { LayoutDashboard, Zap, Users, Bot, Send } from "lucide-react";
+import { LayoutDashboard, Zap, Users, Bot, Send, GitFork } from "lucide-react";
 import type { ElementType } from "react";
 
 export type NavItem = {
@@ -15,6 +15,7 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "members",      label: "Members",      path: "members",      Icon: Users           },
   { id: "bot",          label: "Bot Setup",    path: "bot",          Icon: Bot             },
   { id: "test",         label: "Test Agent",   path: "test",         Icon: Send            },
+  { id: "graph",        label: "Graph",        path: "graph",        Icon: GitFork         },
 ];
 
 export function navHref(slug: string, path: string): string {

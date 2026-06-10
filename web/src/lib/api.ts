@@ -49,6 +49,14 @@ export type Integration = {
   createdAt: string;
 };
 
+export type MemberSnapshot = {
+  memberId: string;
+  activeTasks: Array<{ id: string; title: string; status: string; tool: string; url?: string }> | null;
+  blockers: Array<{ description: string; source_tool: string }> | null;
+  calendarStatus: string | null;
+  updatedAt: string | null;
+};
+
 export type RegisterPayload = {
   name: string;
   slug: string;
@@ -90,6 +98,10 @@ export const api = {
     }, slug);
   },
 
+  getSnapshots(slug: string) {
+    return request<MemberSnapshot[]>(`/admin/orgs/${slug}/snapshots`, {}, slug);
+  },
+
   getIntegrations(slug: string) {
     return request<Integration[]>(`/admin/orgs/${slug}/integrations`, {}, slug);
   },
@@ -98,6 +110,17 @@ export const api = {
     return request<{ ok: boolean; service: string }>(`/admin/orgs/${slug}/integrations/${service}`, {
       method: "POST",
       body: JSON.stringify(data),
+    }, slug);
+  },
+
+  oauthConnectUrl(slug: string, service: string): string {
+    const token = getToken(slug) ?? "";
+    return `${API}/admin/orgs/${slug}/integrations/${service}/connect?token=${encodeURIComponent(token)}`;
+  },
+
+  createInviteLink(slug: string) {
+    return request<{ link: string; expiresIn: string }>(`/admin/orgs/${slug}/invite-link`, {
+      method: "POST",
     }, slug);
   },
 

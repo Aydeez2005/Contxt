@@ -1,4 +1,5 @@
 import type { OrgIntegration } from "../../db/schema.ts";
+import { getValidToken } from "../../lib/tokenRefresh.ts";
 
 export type SlackMessage = {
   text: string;
@@ -13,10 +14,11 @@ export async function getRecentMessages(
   const integration = integrations.find((i) => i.service === "slack");
   if (!integration) return [];
 
+  const token = await getValidToken(integration);
   const res = await fetch(
     `https://slack.com/api/search.messages?query=from:<@${slackUserId}>&count=5&sort=timestamp`,
     {
-      headers: { Authorization: `Bearer ${integration.accessToken}` },
+      headers: { Authorization: `Bearer ${token}` },
     }
   );
 

@@ -8,7 +8,8 @@ export async function adminAuth(c: Context, next: Next) {
   if (!slug) return await next();
 
   const auth = c.req.header("Authorization");
-  const token = auth?.replace("Bearer ", "").trim();
+  const queryToken = c.req.query("token");
+  const token = auth?.replace("Bearer ", "").trim() || queryToken;
   if (!token) return c.json({ error: "Authorization required." }, 401);
 
   const [org] = await db

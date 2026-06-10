@@ -1,4 +1,5 @@
 import type { OrgIntegration } from "../../db/schema.ts";
+import { getValidToken } from "../../lib/tokenRefresh.ts";
 
 export type NotionPage = {
   id: string;
@@ -14,10 +15,11 @@ export async function searchPages(
   const integration = integrations.find((i) => i.service === "notion");
   if (!integration) return [];
 
+  const token = await getValidToken(integration);
   const res = await fetch("https://api.notion.com/v1/search", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${integration.accessToken}`,
+      Authorization: `Bearer ${token}`,
       "Notion-Version": "2022-06-28",
       "Content-Type": "application/json",
     },

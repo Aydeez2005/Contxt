@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, use } from "react";
-import { Trash2, Plus, Users } from "lucide-react";
+import { Trash2, Plus, Users, Link2, Copy, Check } from "lucide-react";
 import { useDashboard } from "@/lib/dashboard-context";
 import { ActionBtn } from "@/components/dashboard/action-btn";
 import { DashInput, FieldLabel } from "@/components/dashboard/dash-input";
@@ -18,6 +18,10 @@ export default function MembersPage({ params }: { params: Promise<{ slug: string
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteForm, setInviteForm] = useState({ telegramId: "", displayName: "" });
   const [inviteLoading, setInviteLoading] = useState(false);
+
+  const [linkLoading, setLinkLoading] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const activeMembers = members.filter(m => m.isActive);
 
@@ -37,6 +41,25 @@ export default function MembersPage({ params }: { params: Promise<{ slug: string
     } finally {
       setInviteLoading(false);
     }
+  }
+
+  async function handleGenerateLink() {
+    setLinkLoading(true);
+    try {
+      const { link } = await api.createInviteLink(slug);
+      setGeneratedLink(link);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to generate link.");
+    } finally {
+      setLinkLoading(false);
+    }
+  }
+
+  async function handleCopyLink() {
+    if (!generatedLink) return;
+    await navigator.clipboard.writeText(generatedLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   async function handleRemove(memberId: string) {
@@ -92,6 +115,30 @@ export default function MembersPage({ params }: { params: Promise<{ slug: string
             </form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div style={{ borderRadius: 16, border: "1px solid var(--rule)", background: "white", padding: "1rem 1.25rem", display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ fontSize: 13.5, fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "var(--ink)" }}>Invite link</p>
+          <p style={{ fontSize: 11.5, color: "var(--ink-30)", marginTop: 2, fontFamily: "var(--font-dm-sans)" }}>Generate a one-time link — share it via Telegram and the member will be auto-registered.</p>
+          {generatedLink && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+              <input
+                readOnly
+                value={generatedLink}
+                style={{ flex: 1, fontSize: 11.5, fontFamily: "monospace", padding: "5px 10px", borderRadius: 8, border: "1px solid var(--rule)", background: "var(--surface)", color: "var(--ink-50)", outline: "none" }}
+              />
+              <ActionBtn variant="ghost" onClick={handleCopyLink}>
+                {copied ? <Check style={{ width: 12, height: 12, color: "#16a34a" }} /> : <Copy style={{ width: 12, height: 12 }} />}
+                {copied ? "Copied" : "Copy"}
+              </ActionBtn>
+            </div>
+          )}
+        </div>
+        <ActionBtn onClick={handleGenerateLink} disabled={linkLoading}>
+          {linkLoading ? <Spinner size={12} /> : <Link2 style={{ width: 13, height: 13 }} />}
+          Generate link
+        </ActionBtn>
       </div>
 
       <div style={{ borderRadius: 16, border: "1px solid var(--rule)", background: "white", overflow: "hidden" }}>

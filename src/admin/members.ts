@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/client.ts";
-import { members, organizations } from "../db/schema.ts";
+import { members, organizations, memberSnapshots } from "../db/schema.ts";
 import { redis } from "../lib/redis.ts";
 import type { MemberMeta } from "../db/schema.ts";
 
@@ -179,6 +179,27 @@ export async function redeemInvite(
   await redis.del(`tenant:${telegramId}`);
 
   return { orgId: stored.orgId, memberId: inserted[0].id };
+}
+
+export async function getMemberSnapshots(c: Context) {
+  const slug = c.req.param("slug");
+  if (!slug) return c.json({ error: "Missing slug." }, 400);
+
+  const org = await requireOrg(slug);
+  if (!org) return c.json({ error: "Org not found." }, 404);
+
+  const rows = await db
+    .select({
+      memberId: memberSnapshots.memberId,
+      activeTasks: memberSnapshots.activeTasks,
+      blockers: memberSnapshots.blockers,
+      calendarStatus: memberSnapshots.calendarStatus,
+      updatedAt: memberSnapshots.updatedAt,
+    })
+    .from(memberSnapshots)
+    .where(eq(memberSnapshots.orgId, org.id));
+
+  return c.json(rows);
 }
 
 export async function removeMember(c: Context) {

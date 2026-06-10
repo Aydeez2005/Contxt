@@ -88,7 +88,7 @@ Calendar: ${cal.status}`;
       updatedAt: now,
     })
     .onConflictDoUpdate({
-      target: [memberSnapshots.memberId],
+      target: [memberSnapshots.orgId, memberSnapshots.memberId],
       set: {
         activeTasks,
         blockers,

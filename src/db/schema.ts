@@ -74,27 +74,35 @@ export const orgIntegrations = pgTable(
   (t) => [unique().on(t.orgId, t.service)]
 );
 
-export const memberSnapshots = pgTable("member_snapshots", {
-  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  orgId: uuid("org_id").notNull().references(() => organizations.id),
-  memberId: uuid("member_id").notNull().references(() => members.id),
-  activeTasks: jsonb("active_tasks"),
-  blockers: jsonb("blockers"),
-  lastActivity: jsonb("last_activity"),
-  calendarStatus: text("calendar_status"),
-  rawContext: text("raw_context"),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
-});
+export const memberSnapshots = pgTable(
+  "member_snapshots",
+  {
+    id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    orgId: uuid("org_id").notNull().references(() => organizations.id),
+    memberId: uuid("member_id").notNull().references(() => members.id),
+    activeTasks: jsonb("active_tasks"),
+    blockers: jsonb("blockers"),
+    lastActivity: jsonb("last_activity"),
+    calendarStatus: text("calendar_status"),
+    rawContext: text("raw_context"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [unique().on(t.orgId, t.memberId)]
+);
 
-export const orgEmbeddings = pgTable("org_embeddings", {
-  id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  orgId: uuid("org_id").notNull().references(() => organizations.id),
-  sourceTool: text("source_tool").notNull(),
-  sourceId: text("source_id").notNull(),
-  content: text("content").notNull(),
-  embedding: vector("embedding"),
-  indexedAt: timestamp("indexed_at", { withTimezone: true }).defaultNow(),
-});
+export const orgEmbeddings = pgTable(
+  "org_embeddings",
+  {
+    id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    orgId: uuid("org_id").notNull().references(() => organizations.id),
+    sourceTool: text("source_tool").notNull(),
+    sourceId: text("source_id").notNull(),
+    content: text("content").notNull(),
+    embedding: vector("embedding"),
+    indexedAt: timestamp("indexed_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [unique().on(t.orgId, t.sourceTool, t.sourceId)]
+);
 
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().$defaultFn(() => crypto.randomUUID()),

@@ -1,4 +1,5 @@
 import type { OrgIntegration } from "../../db/schema.ts";
+import { getValidToken } from "../../lib/tokenRefresh.ts";
 
 export type CalendarEvent = {
   id: string;
@@ -18,10 +19,11 @@ export async function getCurrentStatus(
   const now = new Date().toISOString();
   const in1h = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
+  const token = await getValidToken(integration);
   const res = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarEmail)}/events?timeMin=${now}&timeMax=${in1h}&singleEvents=true&orderBy=startTime&maxResults=1`,
     {
-      headers: { Authorization: `Bearer ${integration.accessToken}` },
+      headers: { Authorization: `Bearer ${token}` },
     }
   );
 
