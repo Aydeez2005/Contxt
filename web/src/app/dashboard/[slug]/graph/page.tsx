@@ -5,7 +5,6 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   useNodesState,
   useEdgesState,
   MarkerType,
@@ -14,122 +13,194 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useDashboard } from "@/lib/dashboard-context";
-import { api, type MemberSnapshot } from "@/lib/api";
+import { api, type MemberSnapshot, type Member, type Integration } from "@/lib/api";
 import { Spinner } from "@/components/kibo-ui/spinner";
-import { FACE_COLORS } from "@/utils/dashboard";
 
+// ── Colours ───────────────────────────────────────────────────────────────────
+
+const MEMBER_COLORS = ["#6366f1","#8b5cf6","#ec4899","#f59e0b","#10b981","#3b82f6","#ef4444","#14b8a6"];
 const TOOL_COLORS: Record<string, string> = {
-  jira: "#0052CC",
-  linear: "#5E6AD2",
-  slack: "#611F69",
-  notion: "#191919",
-  github: "#1F6FEB",
-  gcal: "#1A73E8",
+  jira: "#0052CC", linear: "#5E6AD2", slack: "#611F69",
+  notion: "#191919", github: "#1F6FEB", gcal: "#1A73E8",
 };
 
+// ── Node styles ───────────────────────────────────────────────────────────────
+
+function memberStyle(color: string): React.CSSProperties {
+  return {
+    width: 14, height: 14, borderRadius: "50%",
+    background: color, border: `2px solid ${color}`,
+    boxShadow: `0 0 0 3px ${color}22`,
+  };
+}
+
+function toolStyle(color: string): React.CSSProperties {
+  return {
+    width: 20, height: 20, borderRadius: "50%",
+    background: color, border: `2.5px solid ${color}`,
+    boxShadow: `0 0 0 4px ${color}33`,
+  };
+}
+
+function taskStyle(color: string): React.CSSProperties {
+  return {
+    width: 9, height: 9, borderRadius: "50%",
+    background: `${color}99`, border: `1.5px solid ${color}`,
+  };
+}
+
+// ── Label node ────────────────────────────────────────────────────────────────
+
+function labelStyle(fontSize: number, color: string): React.CSSProperties {
+  return {
+    fontSize, color, fontFamily: "var(--font-dm-sans)",
+    background: "transparent", border: "none", padding: 0,
+    pointerEvents: "none", whiteSpace: "nowrap",
+  };
+}
+
+// ── Layout helpers ────────────────────────────────────────────────────────────
+
+function ring(cx: number, cy: number, r: number, n: number, offset = 0) {
+  return Array.from({ length: n }, (_, i) => {
+    const angle = (i / n) * 2 * Math.PI + offset;
+    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+  });
+}
+
+// ── Graph builder ─────────────────────────────────────────────────────────────
+
 function buildGraph(
-  members: { id: string; displayName: string | null; telegramUsername: string | null }[],
+  members: Member[],
   snapshots: MemberSnapshot[],
-  integrations: { service: string }[]
+  integrations: Integration[]
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  const snapshotMap = new Map(snapshots.map((s) => [s.memberId, s]));
-  const connectedTools = integrations.map((i) => i.service);
+  const active = members.filter(m => m.isActive);
+  const snapMap = new Map(snapshots.map(s => [s.memberId, s]));
 
-  // Tool nodes (one per connected integration)
-  connectedTools.forEach((tool, i) => {
-    const angle = (i / connectedTools.length) * 2 * Math.PI;
-    const radius = 280;
+  // Collect which tools actually appear in snapshot data
+  const toolsInUse = new Set<string>();
+  for (const s of snapshots) {
+    for (const t of s.activeTasks ?? []) toolsInUse.add(t.tool);
+  }
+  // Also include connected integrations
+  for (const i of integrations) toolsInUse.add(i.service);
+  const tools = [...toolsInUse];
+
+  const CX = 560, CY = 380;
+  const TOOL_R = 300;
+  const MEMBER_R = 140;
+
+  // Tool positions (outer ring)
+  const toolPos = ring(CX, CY, TOOL_R, tools.length, -Math.PI / 2);
+
+  // Member positions (inner ring)
+  const memberPos = ring(CX, CY, MEMBER_R, active.length, -Math.PI / 2);
+
+  // ── Tool nodes
+  tools.forEach((tool, i) => {
+    const color = TOOL_COLORS[tool] ?? "#888";
+    const pos = toolPos[i];
     nodes.push({
       id: `tool-${tool}`,
-      type: "default",
-      position: {
-        x: 480 + Math.cos(angle) * radius,
-        y: 300 + Math.sin(angle) * radius,
-      },
+      position: { x: pos.x - 10, y: pos.y - 10 },
+      data: { label: "" },
+      style: toolStyle(color),
+      draggable: true,
+    });
+    // Label node for tool
+    nodes.push({
+      id: `tool-${tool}-label`,
+      position: { x: pos.x - 30, y: pos.y + 16 },
       data: { label: tool.charAt(0).toUpperCase() + tool.slice(1) },
-      style: {
-        background: TOOL_COLORS[tool] ?? "#666",
-        color: "white",
-        border: "none",
-        borderRadius: 12,
-        fontSize: 12,
-        fontWeight: 600,
-        padding: "6px 14px",
-        fontFamily: "var(--font-dm-sans)",
-      },
+      style: labelStyle(10, color),
+      draggable: false,
+      selectable: false,
     });
   });
 
-  // Member nodes arranged in a column
-  members.forEach((member, i) => {
-    const color = FACE_COLORS[i % FACE_COLORS.length];
-    const snapshot = snapshotMap.get(member.id);
-    const name = member.displayName ?? member.telegramUsername ?? `#${member.id.slice(0, 6)}`;
-
-    const taskCount = snapshot?.activeTasks?.length ?? 0;
-    const blockerCount = snapshot?.blockers?.length ?? 0;
-    const calStatus = snapshot?.calendarStatus ?? null;
-
-    const labelLines = [
-      name,
-      taskCount > 0 ? `${taskCount} task${taskCount > 1 ? "s" : ""}` : null,
-      blockerCount > 0 ? `⚠ ${blockerCount} blocker${blockerCount > 1 ? "s" : ""}` : null,
-      calStatus === "in_meeting" ? "📅 In meeting" : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
+  // ── Member nodes + task nodes + edges
+  active.forEach((member, mi) => {
+    const color = MEMBER_COLORS[mi % MEMBER_COLORS.length];
+    const mPos = memberPos[mi];
+    const mId = `member-${member.id}`;
 
     nodes.push({
-      id: `member-${member.id}`,
-      type: "default",
-      position: { x: 100, y: 60 + i * 120 },
-      data: { label: labelLines },
-      style: {
-        background: `${color}14`,
-        border: `2px solid ${color}40`,
-        borderRadius: 14,
-        fontSize: 12,
-        color: "var(--ink)",
-        fontFamily: "var(--font-dm-sans)",
-        padding: "8px 14px",
-        whiteSpace: "pre",
-        lineHeight: 1.6,
-      },
+      id: mId,
+      position: { x: mPos.x - 7, y: mPos.y - 7 },
+      data: { label: "" },
+      style: memberStyle(color),
+      draggable: true,
+    });
+    nodes.push({
+      id: `${mId}-label`,
+      position: { x: mPos.x - 30, y: mPos.y + 12 },
+      data: { label: member.displayName ?? member.telegramUsername ?? "?" },
+      style: labelStyle(10, "#333"),
+      draggable: false,
+      selectable: false,
     });
 
-    // Edge: member → tool (for each tool they have an active task in)
-    const usedTools = new Set(
-      (snapshot?.activeTasks ?? []).map((t) => t.tool).filter((t) => connectedTools.includes(t))
-    );
+    const snap = snapMap.get(member.id);
+    if (!snap) return;
 
-    for (const tool of usedTools) {
-      edges.push({
-        id: `${member.id}-${tool}`,
-        source: `member-${member.id}`,
-        target: `tool-${tool}`,
-        markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14 },
-        style: { stroke: TOOL_COLORS[tool] ?? "#aaa", strokeWidth: 1.5, opacity: 0.7 },
+    // Task nodes — scatter them between member and their tool
+    const tasks = snap.activeTasks ?? [];
+    tasks.forEach((task, ti) => {
+      const toolIdx = tools.indexOf(task.tool);
+      if (toolIdx === -1) return;
+      const tPos = toolPos[toolIdx];
+
+      // Interpolate between member and tool, with a small perpendicular jitter
+      const t = 0.35 + (ti % 3) * 0.12;
+      const jitter = ((ti % 5) - 2) * 22;
+      const angle = Math.atan2(tPos.y - mPos.y, tPos.x - mPos.x) + Math.PI / 2;
+      const tx = mPos.x + (tPos.x - mPos.x) * t + Math.cos(angle) * jitter;
+      const ty = mPos.y + (tPos.y - mPos.y) * t + Math.sin(angle) * jitter;
+
+      const taskNodeId = `task-${member.id}-${task.id}`;
+      const toolColor = TOOL_COLORS[task.tool] ?? "#888";
+
+      nodes.push({
+        id: taskNodeId,
+        position: { x: tx - 4, y: ty - 4 },
+        data: { label: task.title },
+        style: taskStyle(toolColor),
+        draggable: true,
       });
-    }
 
-    // Edge: member → member (blockers referencing another member by name)
-    for (const blocker of snapshot?.blockers ?? []) {
+      // Member → task
+      edges.push({
+        id: `e-m-${mId}-${taskNodeId}`,
+        source: mId,
+        target: taskNodeId,
+        style: { stroke: color, strokeWidth: 1, opacity: 0.4 },
+      });
+      // Task → tool
+      edges.push({
+        id: `e-t-${taskNodeId}-tool-${task.tool}`,
+        source: taskNodeId,
+        target: `tool-${task.tool}`,
+        style: { stroke: toolColor, strokeWidth: 1, opacity: 0.35 },
+      });
+    });
+
+    // Blocker edges: member → member (red dashed)
+    for (const blocker of snap.blockers ?? []) {
       const desc = blocker.description.toLowerCase();
-      members.forEach((other) => {
+      active.forEach(other => {
         if (other.id === member.id) return;
-        const otherName = (other.displayName ?? other.telegramUsername ?? "").toLowerCase();
+        const otherName = (other.displayName ?? "").toLowerCase();
         if (otherName && desc.includes(otherName)) {
           edges.push({
             id: `blocker-${member.id}-${other.id}`,
-            source: `member-${member.id}`,
+            source: mId,
             target: `member-${other.id}`,
-            label: "blocked by",
-            markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14 },
-            style: { stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "5,4" },
-            labelStyle: { fontSize: 10, fill: "#ef4444" },
+            markerEnd: { type: MarkerType.ArrowClosed, width: 10, height: 10, color: "#ef4444" },
+            style: { stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "4,3", opacity: 0.7 },
           });
         }
       });
@@ -139,33 +210,28 @@ function buildGraph(
   return { nodes, edges };
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function GraphPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { members, integrations, loading } = useDashboard();
   const [snapshots, setSnapshots] = useState<MemberSnapshot[]>([]);
   const [snapsLoading, setSnapsLoading] = useState(true);
-
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   const loadSnapshots = useCallback(async () => {
     setSnapsLoading(true);
-    try {
-      const data = await api.getSnapshots(slug);
-      setSnapshots(data);
-    } catch {
-      setSnapshots([]);
-    } finally {
-      setSnapsLoading(false);
-    }
+    try { setSnapshots(await api.getSnapshots(slug)); }
+    catch { setSnapshots([]); }
+    finally { setSnapsLoading(false); }
   }, [slug]);
 
   useEffect(() => { loadSnapshots(); }, [loadSnapshots]);
 
   useEffect(() => {
     if (loading || snapsLoading) return;
-    const activeMembers = members.filter((m) => m.isActive);
-    const { nodes: n, edges: e } = buildGraph(activeMembers, snapshots, integrations);
+    const { nodes: n, edges: e } = buildGraph(members, snapshots, integrations);
     setNodes(n);
     setEdges(e);
   }, [loading, snapsLoading, members, snapshots, integrations, setNodes, setEdges]);
@@ -178,21 +244,36 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
     );
   }
 
+  const taskCount = snapshots.reduce((s, sn) => s + (sn.activeTasks?.length ?? 0), 0);
+  const blockerCount = snapshots.reduce((s, sn) => s + (sn.blockers?.length ?? 0), 0);
+
   return (
-    <div style={{ height: "calc(100vh - 120px)", borderRadius: 16, overflow: "hidden", border: "1px solid var(--rule)" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background color="var(--rule)" gap={20} />
-        <Controls showInteractive={false} />
-        <MiniMap nodeColor={() => "#e2e2e2"} maskColor="rgba(255,255,255,0.6)" />
-      </ReactFlow>
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+      <div style={{ display: "flex", gap: 12, fontSize: 11.5, color: "var(--ink-30)", fontFamily: "var(--font-dm-sans)" }}>
+        <span>{members.filter(m => m.isActive).length} members</span>
+        <span>·</span>
+        <span>{taskCount} tasks</span>
+        <span>·</span>
+        <span>{integrations.length} tools</span>
+        {blockerCount > 0 && <><span>·</span><span style={{ color: "#ef4444" }}>{blockerCount} blockers</span></>}
+      </div>
+      <div style={{ height: "calc(100vh - 148px)", borderRadius: 16, overflow: "hidden", border: "1px solid var(--rule)", background: "#fafaf9" }}>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+          fitViewOptions={{ padding: 0.15 }}
+          proOptions={{ hideAttribution: true }}
+          nodesDraggable
+          minZoom={0.3}
+          maxZoom={3}
+        >
+          <Background color="#e5e4e0" gap={24} size={1} />
+          <Controls showInteractive={false} style={{ boxShadow: "none", border: "1px solid var(--rule)", borderRadius: 10 }} />
+        </ReactFlow>
+      </div>
     </div>
   );
 }
