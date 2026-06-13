@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contxt — Pitch Deck v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #141414;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    padding: 24px;
+  }
+  .deck { width: 100%; max-width: 960px; }
+  .slide { display: none; width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; border-radius: 12px; }
+  .slide.active { display: flex; }
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
+  .nav button { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+  .nav button:hover { background: rgba(255,255,255,0.13); }
+  .nav button:disabled { opacity: 0.2; cursor: default; }
+  .counter { color: rgba(255,255,255,0.3); font-size: 11px; letter-spacing: 0.1em; }
+
+  /* ── SLIDE 1: The Hook (unchanged) ── */
+  #s1 {
+    background: #09090B;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8% 10%;
+  }
+  #s1 .eyebrow { font-family: 'DM Sans', sans-serif; font-size: clamp(9px,1.1vw,12px); font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 28px; }
+  #s1 .story { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,3.2vw,36px); color: #fff; line-height: 1.12; letter-spacing: -0.03em; max-width: 90%; }
+  #s1 .story em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.5); font-size: 1.1em; }
+  #s1 .pause { margin-top: 30px; font-family: 'DM Sans', sans-serif; font-size: clamp(11px,1.4vw,15px); color: rgba(255,255,255,0.32); font-weight: 300; line-height: 1.7; max-width: 58%; }
+  #s1 .corner { position:absolute; right:0; bottom:0; width:35%; height:100%; background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.018) 50%); }
+
+  /* ── SLIDE 2: Problem → Solution ── */
+  #s2 { background: #09090B; flex-direction: row; }
+  #s2 .left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 7% 8% 9%; border-right: 1px solid rgba(255,255,255,0.06); }
+  #s2 .right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 9% 8% 7%; }
+  #s2 .micro { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 20px; }
+  #s2 .big-stat { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(36px,6vw,72px); color: #fff; letter-spacing: -0.04em; line-height: 1; margin-bottom: 10px; }
+  #s2 .stat-sub { font-family: 'DM Sans', sans-serif; font-size: clamp(11px,1.3vw,14px); color: rgba(255,255,255,0.28); font-weight: 300; line-height: 1.5; }
+  #s2 .tool-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
+  #s2 .tp { font-size: clamp(8px,0.9vw,10px); font-weight: 500; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 3px 10px; letter-spacing: 0.03em; }
+  #s2 .product { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px,6.5vw,76px); color: #fff; letter-spacing: -0.045em; line-height: 0.95; margin-bottom: 14px; }
+  #s2 .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(16px,2.2vw,26px); color: rgba(255,255,255,0.38); letter-spacing: 0.01em; line-height: 1.3; }
+
+  /* ── SLIDE 3: The Graph (matches real app) ── */
+  #s3 { background: #09090B; flex-direction: column; padding: 4% 5%; }
+  #s3 .chrome { background: #fafaf9; border-radius: 10px; flex: 1; overflow: hidden; position: relative; border: 1px solid #e4e4e7; display: flex; flex-direction: column; }
+  #s3 .chrome-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid #e4e4e7; background: #fff; flex-shrink: 0; }
+  #s3 .chrome-title { font-size: 11px; font-weight: 600; color: #3f3f46; font-family: 'DM Sans', sans-serif; }
+  #s3 .chrome-stats { display: flex; gap: 12px; font-size: 10px; color: #a1a1aa; font-family: 'DM Sans', sans-serif; }
+  #s3 .graph-area { flex: 1; position: relative; overflow: hidden; }
+
+  /* dot grid background matching app */
+  #s3 .graph-area::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.5;
+  }
+
+  #s3 .slide-label { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 10px; }
+
+  /* ── SLIDE 4: Vision + Traction ── */
+  #s4 { background: #09090B; flex-direction: column; justify-content: center; padding: 8% 10%; }
+  #s4 .micro { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 22px; }
+  #s4 .vision { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px,3.6vw,42px); color: #fff; line-height: 1.12; letter-spacing: -0.035em; max-width: 72%; margin-bottom: 44px; }
+  #s4 .vision em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.4); }
+  #s4 .stats { display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 28px; }
+  #s4 .stat { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.07); margin-right: 32px; }
+  #s4 .stat:last-child { border: none; margin: 0; padding: 0; }
+  #s4 .stat-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,2.8vw,32px); color: #fff; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
+  #s4 .stat-l { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.25); line-height: 1.5; font-family: 'DM Sans', sans-serif; }
+
+  /* ── SLIDE 5: The Ask ── */
+  #s5 { background: #09090B; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8% 14%; }
+  #s5 .wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(12px,1.5vw,17px); color: rgba(255,255,255,0.22); letter-spacing: -0.02em; margin-bottom: 26px; }
+  #s5 .ask { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px,3.6vw,42px); color: #fff; line-height: 1.1; letter-spacing: -0.035em; margin-bottom: 16px; }
+  #s5 .ask em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.4); font-size: 1.08em; }
+  #s5 .sub { font-size: clamp(11px,1.3vw,14px); color: rgba(255,255,255,0.25); margin-bottom: 36px; font-weight: 300; }
+  #s5 .bot-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 8px 18px 8px 10px; }
+  #s5 .bot-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
+  #s5 .bot-url { font-size: clamp(10px,1.1vw,12px); color: rgba(255,255,255,0.4); letter-spacing: 0.03em; font-family: 'DM Sans', sans-serif; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ── SLIDE 1: The Hook ── -->
+  <div class="slide active" id="s1">
+    <div class="corner"></div>
+    <div class="eyebrow">Contxt &nbsp;·&nbsp; Demo Day</div>
+    <div class="story">
+      It's 9am. 4&nbsp;meetings.<br>You'll know nothing new by noon.
+    </div>
+    <div class="pause">
+      Your team already knows what's happening. They just have no way to share it without wasting everyone's time.
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2: Problem → Solution ── -->
+  <div class="slide" id="s2">
+    <div class="left">
+      <div class="micro">The Problem</div>
+      <div class="big-stat">23 hrs</div>
+      <div class="stat-sub">wasted in meetings<br>every week per manager</div>
+      <div class="tool-row">
+        <span class="tp">Jira</span><span class="tp">Linear</span><span class="tp">Slack</span>
+        <span class="tp">GitHub</span><span class="tp">Google Cal</span><span class="tp">Notion</span>
+      </div>
+    </div>
+    <div class="right">
+      <div class="micro">The Solution</div>
+      <div class="product">Contxt</div>
+      <div class="tagline">The brain of your company.<br>No meeting required.</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 3: Graph (matches real app) ── -->
+  <div class="slide" id="s3">
+    <div class="slide-label">How it works</div>
+    <div class="chrome">
+      <div class="chrome-bar">
+        <span class="chrome-title">Team graph</span>
+        <div class="chrome-stats">
+          <span>9 members</span>
+          <span>·</span>
+          <span>6 tools</span>
+          <span>·</span>
+          <span>24 tasks in flight</span>
+          <span>·</span>
+          <span style="color:#4ade80">● live</span>
+        </div>
+      </div>
+      <div class="graph-area">
+        <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
+
+          <!-- Tool-to-member edges (outer → inner) -->
+          <!-- Member 1 (50%,50%) → Tools -->
+          <line x1="50%" y1="50%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.35"/>
+          <line x1="50%" y1="50%" x2="82%" y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.35"/>
+          <line x1="50%" y1="50%" x2="88%" y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.35"/>
+          <line x1="50%" y1="50%" x2="70%" y2="87%" stroke="#611F69" stroke-width="1" opacity="0.35"/>
+          <line x1="50%" y1="50%" x2="30%" y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.35"/>
+          <line x1="50%" y1="50%" x2="12%" y2="55%" stroke="#191919" stroke-width="1" opacity="0.25"/>
+          <line x1="50%" y1="50%" x2="18%" y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.35"/>
+
+          <!-- Member ring edges -->
+          <line x1="68%" y1="30%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.25"/>
+          <line x1="68%" y1="30%" x2="82%" y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.25"/>
+          <line x1="74%" y1="68%" x2="88%" y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.25"/>
+          <line x1="74%" y1="68%" x2="70%" y2="87%" stroke="#611F69" stroke-width="1" opacity="0.25"/>
+          <line x1="32%" y1="68%" x2="30%" y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.25"/>
+          <line x1="32%" y1="68%" x2="12%" y2="55%" stroke="#191919" stroke-width="1" opacity="0.2"/>
+          <line x1="26%" y1="32%" x2="18%" y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.25"/>
+          <line x1="26%" y1="32%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.2"/>
+
+          <!-- Task nodes (small dots along edges) -->
+          <circle cx="59%" cy="29%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
+          <circle cx="66%" cy="35%" r="3" fill="#0052CC55" stroke="#0052CC" stroke-width="1"/>
+          <circle cx="70%" cy="52%" r="3" fill="#5E6AD255" stroke="#5E6AD2" stroke-width="1"/>
+          <circle cx="62%" cy="69%" r="3" fill="#611F6955" stroke="#611F69" stroke-width="1"/>
+          <circle cx="40%" cy="69%" r="3" fill="#1F6FEB55" stroke="#1F6FEB" stroke-width="1"/>
+          <circle cx="30%" cy="52%" r="3" fill="#19191955" stroke="#71717a" stroke-width="1"/>
+          <circle cx="34%" cy="36%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
+          <circle cx="50%" cy="29%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
+
+          <!-- ── Member nodes (inner ring, 14x14 → r=7) ── -->
+          <!-- Center member -->
+          <circle cx="50%" cy="50%" r="7" fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
+          <circle cx="50%" cy="50%" r="11" fill="none" stroke="#6366f122" stroke-width="3"/>
+
+          <!-- Ring members -->
+          <circle cx="68%" cy="30%" r="7" fill="#8b5cf6" stroke="#8b5cf6" stroke-width="2"/>
+          <circle cx="68%" cy="30%" r="11" fill="none" stroke="#8b5cf622" stroke-width="3"/>
+
+          <circle cx="74%" cy="68%" r="7" fill="#ec4899" stroke="#ec4899" stroke-width="2"/>
+          <circle cx="74%" cy="68%" r="11" fill="none" stroke="#ec489922" stroke-width="3"/>
+
+          <circle cx="32%" cy="68%" r="7" fill="#f59e0b" stroke="#f59e0b" stroke-width="2"/>
+          <circle cx="32%" cy="68%" r="11" fill="none" stroke="#f59e0b22" stroke-width="3"/>
+
+          <circle cx="26%" cy="32%" r="7" fill="#10b981" stroke="#10b981" stroke-width="2"/>
+          <circle cx="26%" cy="32%" r="11" fill="none" stroke="#10b98122" stroke-width="3"/>
+
+          <circle cx="50%" cy="68%" r="7" fill="#3b82f6" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="50%" cy="68%" r="11" fill="none" stroke="#3b82f622" stroke-width="3"/>
+
+          <circle cx="68%" cy="50%" r="7" fill="#ef4444" stroke="#ef4444" stroke-width="2"/>
+          <circle cx="68%" cy="50%" r="11" fill="none" stroke="#ef444422" stroke-width="3"/>
+
+          <circle cx="32%" cy="50%" r="7" fill="#14b8a6" stroke="#14b8a6" stroke-width="2"/>
+          <circle cx="32%" cy="50%" r="11" fill="none" stroke="#14b8a622" stroke-width="3"/>
+
+          <!-- ── Tool nodes (outer ring, 20x20 → r=10) ── -->
+          <!-- GCal top -->
+          <circle cx="50%" cy="8%" r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2.5"/>
+          <circle cx="50%" cy="8%" r="14" fill="none" stroke="#1A73E833" stroke-width="3"/>
+
+          <!-- Jira top-right -->
+          <circle cx="82%" cy="20%" r="10" fill="#0052CC" stroke="#0052CC" stroke-width="2.5"/>
+          <circle cx="82%" cy="20%" r="14" fill="none" stroke="#0052CC33" stroke-width="3"/>
+
+          <!-- Linear right -->
+          <circle cx="88%" cy="55%" r="10" fill="#5E6AD2" stroke="#5E6AD2" stroke-width="2.5"/>
+          <circle cx="88%" cy="55%" r="14" fill="none" stroke="#5E6AD233" stroke-width="3"/>
+
+          <!-- Slack bottom-right -->
+          <circle cx="70%" cy="87%" r="10" fill="#611F69" stroke="#611F69" stroke-width="2.5"/>
+          <circle cx="70%" cy="87%" r="14" fill="none" stroke="#611F6933" stroke-width="3"/>
+
+          <!-- GitHub bottom-left -->
+          <circle cx="30%" cy="87%" r="10" fill="#1F6FEB" stroke="#1F6FEB" stroke-width="2.5"/>
+          <circle cx="30%" cy="87%" r="14" fill="none" stroke="#1F6FEB33" stroke-width="3"/>
+
+          <!-- Notion left -->
+          <circle cx="12%" cy="55%" r="10" fill="#444" stroke="#555" stroke-width="2.5"/>
+          <circle cx="12%" cy="55%" r="14" fill="none" stroke="#44444433" stroke-width="3"/>
+
+          <!-- GCal top-left -->
+          <circle cx="18%" cy="20%" r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2.5"/>
+          <circle cx="18%" cy="20%" r="14" fill="none" stroke="#1A73E833" stroke-width="3"/>
+
+          <!-- Tool labels -->
+          <text x="50%" y="4.5%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
+          <text x="86%" y="17%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#0052CC" opacity="0.7">Jira</text>
+          <text x="94%" y="53%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5E6AD2" opacity="0.7">Linear</text>
+          <text x="73%" y="94%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#611F69" opacity="0.7">Slack</text>
+          <text x="27%" y="94%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1F6FEB" opacity="0.7">GitHub</text>
+          <text x="6%"  y="53%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#888" opacity="0.7">Notion</text>
+          <text x="14%" y="17%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
+
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 4: Vision + Traction ── -->
+  <div class="slide" id="s4">
+    <div class="micro">Vision</div>
+    <div class="vision">
+      Work from anywhere. Update anyone.<br>
+      No meeting. No laptop.<br>
+      Just your <em>phone.</em>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-n">Day 1</div>
+        <div class="stat-l">First paying intent<br>before the product existed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">Live</div>
+        <div class="stat-l">Deployed & running<br>first orgs onboarded today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">6 tools</div>
+        <div class="stat-l">Jira · Linear · Slack<br>GitHub · GCal · Notion</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">0 friction</div>
+        <div class="stat-l">Uses Telegram —<br>already open all day</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5: The Ask ── -->
+  <div class="slide" id="s5">
+    <div class="wordmark">Contxt</div>
+    <div class="ask">
+      We're not here for funding.<br>
+      We want <em>3 teams</em><br>
+      to run a pilot with us.
+    </div>
+    <div class="sub">If you know a team manager — introduce us tonight.</div>
+    <div class="bot-pill">
+      <div class="bot-dot"></div>
+      <div class="bot-url">t.me/contxt_bot &nbsp;·&nbsp; contxt.app</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button id="prev" onclick="go(-1)" disabled>← Prev</button>
+  <span class="counter" id="counter">1 / 5</span>
+  <button id="next" onclick="go(1)">Next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let cur = 0;
+  function go(dir) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(slides.length - 1, cur + dir));
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur + 1} / ${slides.length}`;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === slides.length - 1;
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  });
+</script>
+</body>
+</html>
