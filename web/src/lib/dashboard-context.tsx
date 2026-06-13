@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useReducer, useCallback } from "react";
-import { api, type OrgData, type Member, type Integration } from "@/lib/api";
-import { MOCK_ORG, MOCK_MEMBERS, MOCK_INTEGRATIONS } from "@/data/mock";
+import { useRouter } from "next/navigation";
+import { api, AuthError, type OrgData, type Member, type Integration } from "@/lib/api";
 
 type Data = {
   org: OrgData | null;
@@ -13,17 +13,19 @@ type Data = {
 
 type Action =
   | { type: "RELOAD" }
-  | { type: "DONE"; org: OrgData; members: Member[]; integrations: Integration[] };
+  | { type: "DONE"; org: OrgData; members: Member[]; integrations: Integration[] }
+  | { type: "ERROR" };
 
 export type DashboardState = Data & { reload: () => void };
 
-// Reducer — all state changes in one dispatch, no cascading renders
 function reducer(state: Data, action: Action): Data {
   switch (action.type) {
     case "RELOAD":
       return { ...state, loading: true };
     case "DONE":
       return { loading: false, org: action.org, members: action.members, integrations: action.integrations };
+    case "ERROR":
+      return { loading: false, org: null, members: [], integrations: [] };
   }
 }
 
@@ -41,9 +43,14 @@ export function DashboardProvider({
   slug: string;
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [state, dispatch] = useReducer(reducer, initial);
 
   const load = useCallback(async () => {
+    if (!api.getToken(slug)) {
+      router.replace("/login");
+      return;
+    }
     try {
       const [orgData, membersData, integrationsData] = await Promise.all([
         api.getOrg(slug),
@@ -51,23 +58,20 @@ export function DashboardProvider({
         api.getIntegrations(slug),
       ]);
       dispatch({ type: "DONE", org: orgData, members: membersData, integrations: integrationsData });
-    } catch {
-      dispatch({
-        type: "DONE",
-        org: { ...MOCK_ORG, slug },
-        members: MOCK_MEMBERS,
-        integrations: MOCK_INTEGRATIONS,
-      });
+    } catch (err) {
+      if (err instanceof AuthError) {
+        router.replace("/login");
+        return;
+      }
+      dispatch({ type: "ERROR" });
     }
-  }, [slug]);
+  }, [slug, router]);
 
-  // reload() is user-initiated (button clicks, form submits) — not in an effect body
   const reload = useCallback(() => {
     dispatch({ type: "RELOAD" });
     load();
   }, [load]);
 
-  // Effect only calls load() — no synchronous setState inside the effect body
   useEffect(() => { load(); }, [load]);
 
   return (
@@ -76,8 +80,6 @@ export function DashboardProvider({
     </DashboardContext.Provider>
   );
 }
-
-// ── Hook ──────────────────────────────────────────────────────────────
 
 export function useDashboard(): DashboardState {
   return useContext(DashboardContext);

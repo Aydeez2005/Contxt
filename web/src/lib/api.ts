@@ -1,5 +1,9 @@
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
+export class AuthError extends Error {
+  constructor() { super("Unauthorized"); this.name = "AuthError"; }
+}
+
 function getToken(slug: string): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(`contxt_token_${slug}`);
@@ -19,6 +23,7 @@ async function request<T>(path: string, options?: RequestInit, slug?: string): P
       ...options?.headers,
     },
   });
+  if (res.status === 401) throw new AuthError();
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error((err as { error?: string }).error ?? res.statusText);
@@ -30,8 +35,9 @@ export type OrgData = {
   id: string;
   name: string;
   slug: string;
-  telegramBotToken: string | null;
   telegramBotUsername: string | null;
+  botConfigured: boolean;
+  botUsername: string | null;
 };
 
 export type Member = {
@@ -54,6 +60,7 @@ export type MemberSnapshot = {
   activeTasks: Array<{ id: string; title: string; status: string; tool: string; url?: string }> | null;
   blockers: Array<{ description: string; source_tool: string }> | null;
   calendarStatus: string | null;
+  lastActivity: { tool: string; description: string; timestamp: string } | null;
   updatedAt: string | null;
 };
 
@@ -124,10 +131,10 @@ export const api = {
     }, slug);
   },
 
-  registerBot(slug: string, token: string) {
-    return request<{ ok: boolean; webhookUrl: string; botUsername?: string }>(
+  registerBot(slug: string) {
+    return request<{ ok: boolean; webhookUrl?: string; botUsername?: string }>(
       `/admin/orgs/${slug}/bot`,
-      { method: "POST", body: JSON.stringify({ token }) },
+      { method: "POST", body: JSON.stringify({}) },
       slug
     );
   },

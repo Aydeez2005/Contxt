@@ -4,8 +4,9 @@ export const MOCK_ORG: OrgData = {
   id: "1",
   name: "Acme Corp",
   slug: "acme-corp",
-  telegramBotToken: "mock-token",
   telegramBotUsername: "acme_contxt_bot",
+  botConfigured: true,
+  botUsername: "acme_contxt_bot",
 };
 
 export const MOCK_MEMBERS: Member[] = [

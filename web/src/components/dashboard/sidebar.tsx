@@ -7,8 +7,6 @@ import { useDashboard } from "@/lib/dashboard-context";
 import { NAV_ITEMS, navHref } from "@/constants/nav";
 import { api } from "@/lib/api";
 
-const SB = "rgba(213,211,202,0.45)";
-
 type SidebarProps = {
   slug: string;
 };
@@ -35,43 +33,43 @@ export function Sidebar({ slug }: SidebarProps) {
 
   return (
     <aside style={{
-      width: 224, flexShrink: 0,
-      borderRight: `1px solid ${SB}`,
+      width: 220, flexShrink: 0,
+      borderRight: "1px solid #1e1e1e",
       display: "flex", flexDirection: "column",
       height: "100vh", position: "sticky", top: 0,
-      background: "white",
+      background: "#111111",
     }}>
 
       {/* Wordmark */}
-      <div style={{ height: 56, display: "flex", alignItems: "center", padding: "0 1.25rem", borderBottom: `1px solid ${SB}` }}>
+      <div style={{ height: 56, display: "flex", alignItems: "center", padding: "0 1.25rem", borderBottom: "1px solid #1e1e1e" }}>
         <Link href="/" style={{ textDecoration: "none" }}>
-          <span style={{ fontFamily: "var(--font-syne)", fontWeight: 800, letterSpacing: "-0.025em", fontSize: "1rem", color: "var(--ink)" }}>
+          <span style={{ fontFamily: "var(--font-syne)", fontWeight: 800, letterSpacing: "-0.025em", fontSize: "1rem", color: "#ffffff" }}>
             contxt
           </span>
         </Link>
       </div>
 
       {/* Org card */}
-      <div style={{ padding: "0.75rem", borderBottom: `1px solid ${SB}` }}>
+      <div style={{ padding: "0.75rem", borderBottom: "1px solid #1e1e1e" }}>
         <div style={{
           display: "flex", alignItems: "center", gap: 10,
-          borderRadius: 11, border: `1px solid ${SB}`,
-          background: "var(--surface)", padding: "0.5rem 0.75rem",
+          borderRadius: 10, border: "1px solid #222222",
+          background: "#1a1a1a", padding: "0.5rem 0.75rem",
         }}>
           <div style={{
-            height: 30, width: 30, borderRadius: 8, flexShrink: 0,
-            background: "var(--ink)",
+            height: 28, width: 28, borderRadius: 7, flexShrink: 0,
+            background: "#ffffff",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 10.5, fontWeight: 800, color: "var(--paper)",
+            fontSize: 10, fontWeight: 800, color: "#111111",
             fontFamily: "var(--font-syne)",
           }}>
             {initials}
           </div>
           <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 12.5, fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p style={{ fontSize: 12.5, fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "#ffffff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {org?.name ?? slug}
             </p>
-            <p style={{ fontSize: 10, fontFamily: "monospace", color: "var(--ink-15)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 1 }}>
+            <p style={{ fontSize: 10, fontFamily: "monospace", color: "#555555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 1 }}>
               {slug}
             </p>
           </div>
@@ -80,14 +78,14 @@ export function Sidebar({ slug }: SidebarProps) {
 
       {/* Nav */}
       <nav style={{ flex: 1, padding: "0.75rem 0.5rem", display: "flex", flexDirection: "column", gap: 1 }}>
-        <p style={{ fontSize: 9, fontFamily: "var(--font-dm-sans)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-15)", padding: "0 10px", marginBottom: 6 }}>
+        <p style={{ fontSize: 9, fontFamily: "var(--font-dm-sans)", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "#333333", padding: "0 10px", marginBottom: 6 }}>
           Workspace
         </p>
         {NAV_ITEMS.map(({ id, label, path, Icon }) => {
           const href = navHref(slug, path);
           const active = pathname === href;
           const showAlert =
-            (id === "bot" && !org?.telegramBotToken) ||
+            (id === "bot" && !org?.telegramBotUsername) ||
             (id === "integrations" && integrations.length === 0);
 
           return (
@@ -96,20 +94,20 @@ export function Sidebar({ slug }: SidebarProps) {
               href={href}
               style={{
                 display: "flex", alignItems: "center", gap: 9,
-                padding: "0.5rem 0.625rem", borderRadius: 9,
-                fontSize: 13.5, fontFamily: "var(--font-dm-sans)", fontWeight: 500,
+                padding: "0.45rem 0.625rem", borderRadius: 8,
+                fontSize: 13, fontFamily: "var(--font-dm-sans)", fontWeight: 500,
                 textDecoration: "none",
-                background: active ? "var(--ink)" : "transparent",
-                color: active ? "var(--paper)" : "var(--ink-50)",
-                transition: "background 0.15s, color 0.15s",
+                background: active ? "#ffffff" : "transparent",
+                color: active ? "#111111" : "#888888",
+                transition: "background 0.12s, color 0.12s",
               }}
-              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = "var(--surface)"; (e.currentTarget as HTMLElement).style.color = "var(--ink)"; } }}
-              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--ink-50)"; } }}
+              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = "#1a1a1a"; (e.currentTarget as HTMLElement).style.color = "#ffffff"; } }}
+              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "#888888"; } }}
             >
-              <Icon style={{ width: 15, height: 15, flexShrink: 0, opacity: active ? 0.85 : 0.5 }} />
+              <Icon style={{ width: 14, height: 14, flexShrink: 0 }} />
               <span style={{ flex: 1 }}>{label}</span>
               {showAlert && (
-                <span style={{ height: 6, width: 6, borderRadius: "50%", background: active ? "rgba(248,247,242,0.45)" : "var(--ink-15)", flexShrink: 0 }} />
+                <span style={{ height: 5, width: 5, borderRadius: "50%", background: active ? "#555" : "#444", flexShrink: 0 }} />
               )}
             </Link>
           );
@@ -117,15 +115,15 @@ export function Sidebar({ slug }: SidebarProps) {
       </nav>
 
       {/* Bottom */}
-      <div style={{ padding: "0.5rem 0.5rem 0.875rem", borderTop: `1px solid ${SB}`, display: "flex", flexDirection: "column", gap: 1 }}>
+      <div style={{ padding: "0.5rem 0.5rem 0.875rem", borderTop: "1px solid #1e1e1e", display: "flex", flexDirection: "column", gap: 1 }}>
         {org?.telegramBotUsername && (
           <a
             href={`https://t.me/${org.telegramBotUsername}`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 8, padding: "0.5rem 0.625rem", borderRadius: 9, fontSize: 12, color: "var(--ink-30)", textDecoration: "none", transition: "all 0.15s", fontFamily: "var(--font-dm-sans)" }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.background = "var(--surface)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "var(--ink-30)"; e.currentTarget.style.background = "transparent"; }}
+            style={{ display: "flex", alignItems: "center", gap: 8, padding: "0.45rem 0.625rem", borderRadius: 8, fontSize: 12, color: "#555555", textDecoration: "none", transition: "all 0.12s", fontFamily: "var(--font-dm-sans)" }}
+            onMouseEnter={e => { e.currentTarget.style.color = "#ffffff"; e.currentTarget.style.background = "#1a1a1a"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "#555555"; e.currentTarget.style.background = "transparent"; }}
           >
             <MessageSquare style={{ width: 13, height: 13 }} />
             @{org.telegramBotUsername}
@@ -134,9 +132,9 @@ export function Sidebar({ slug }: SidebarProps) {
         )}
         <button
           onClick={handleLogout}
-          style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "0.5rem 0.625rem", borderRadius: 9, fontSize: 12, color: "var(--ink-30)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans)", transition: "all 0.15s", textAlign: "left" }}
-          onMouseEnter={e => { e.currentTarget.style.color = "var(--ink)"; e.currentTarget.style.background = "var(--surface)"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = "var(--ink-30)"; e.currentTarget.style.background = "transparent"; }}
+          style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "0.45rem 0.625rem", borderRadius: 8, fontSize: 12, color: "#555555", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-dm-sans)", transition: "all 0.12s", textAlign: "left" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#ffffff"; e.currentTarget.style.background = "#1a1a1a"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = "#555555"; e.currentTarget.style.background = "transparent"; }}
         >
           <LogOut style={{ width: 13, height: 13 }} /> Sign out
         </button>
