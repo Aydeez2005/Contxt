@@ -273,7 +273,7 @@ export default function RegisterPage() {
                   marginBottom: "2rem", lineHeight: 1.65,
                 }}>
                   Your Telegram user ID makes you the org admin. Message{" "}
-                  <span style={{ fontFamily: "monospace", color: "var(--ink-70)" }}>@userinfobot</span> to find it.
+                  <span style={{ fontFamily: "monospace", color: "var(--ink-70)" }}>@Contxtbot</span> on Telegram; It will reply with your ID.
                 </p>
 
                 {error && (

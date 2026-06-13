@@ -20,7 +20,7 @@ export function getSetupSteps(
 ): SetupStep[] {
   return [
     { label: "Workspace created",              done: true },
-    { label: "Telegram bot connected",         done: !!org?.telegramBotToken },
+    { label: "Telegram bot connected",         done: !!org?.telegramBotUsername },
     { label: "At least one integration added", done: integrations.length > 0 },
     { label: "Team members invited",           done: members.filter(m => m.role !== "admin").length > 0 },
   ];

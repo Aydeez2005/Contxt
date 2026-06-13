@@ -5,8 +5,6 @@ import { useDashboard } from "@/lib/dashboard-context";
 import { navLabelFromPathname } from "@/constants/nav";
 import { getSetupSteps, isSetupComplete } from "@/utils/dashboard";
 
-const SB = "rgba(213,211,202,0.45)";
-
 type TopbarProps = {
   slug: string;
 };
@@ -22,10 +20,10 @@ export function Topbar({ slug }: TopbarProps) {
 
   return (
     <div style={{
-      height: 56, borderBottom: `1px solid ${SB}`,
+      height: 56, borderBottom: "1px solid var(--rule)",
       display: "flex", alignItems: "center", padding: "0 2rem", gap: 12,
       position: "sticky", top: 0,
-      background: "rgba(248,247,242,0.92)", backdropFilter: "blur(20px)", zIndex: 10,
+      background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)", zIndex: 10,
     }}>
       <h1 style={{ flex: 1, fontSize: 14, fontFamily: "var(--font-dm-sans)", fontWeight: 600, color: "var(--ink)" }}>
         {label}

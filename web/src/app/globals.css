@@ -4,29 +4,29 @@
    Contxt — Design System
 
    Brand    : Black & white
-   Base     : Off-white     #F8F7F2
-   Ink      : Warm black    #18170F
+   Base     : White/Zinc    #FFFFFF / #F4F4F5
+   Ink      : Zinc black    #09090B
    Display  : Syne 800 (geometric grotesque)
    Accent   : Cormorant Garamond italic (italic contrast only)
    Body     : DM Sans
 ─────────────────────────────────────────────────────────────────── */
 
 :root {
-  --paper:     #F8F7F2;
-  --paper-2:   #F2F0E9;
-  --surface:   #EDECEA;
-  --rule:      #D5D3CA;
+  --paper:     #FFFFFF;
+  --paper-2:   #FAFAFA;
+  --surface:   #F4F4F5;
+  --rule:      #E4E4E7;
 
-  --ink:       #18170F;
-  --ink-70:    #3D3C33;
-  --ink-50:    #69685D;
-  --ink-30:    #9D9B8E;
-  --ink-15:    #CCCABF;
-  --ink-08:    #DDDBD3;
+  --ink:       #09090B;
+  --ink-70:    #3F3F46;
+  --ink-50:    #71717A;
+  --ink-30:    #A1A1AA;
+  --ink-15:    #D4D4D8;
+  --ink-08:    #E4E4E7;
 
-  --dark:      #141310;
-  --dark-2:    #1C1B17;
-  --dark-3:    #262420;
+  --dark:      #09090B;
+  --dark-2:    #141414;
+  --dark-3:    #1A1A1A;
   --dark-rule: rgba(255, 255, 255, 0.06);
 }
 

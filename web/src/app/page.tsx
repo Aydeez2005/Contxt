@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, GitFork, Calendar, Hash, FileText, Layers, GitBranch } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Jira, Linear, Slack, Notion, Github, GoogleCalendar } from "@thesvg/react";
 
 /* ─── Scroll-reveal ─────────────────────────────────────────────── */
 function Reveal({
@@ -533,12 +534,12 @@ const STEPS = [
 ];
 
 const TOOL_LIST = [
-  { name: "Jira",             tag: "Project tracking",  Icon: Layers,    color: "#0052CC" },
-  { name: "Linear",           tag: "Issue tracking",    Icon: GitBranch, color: "#5E6AD2" },
-  { name: "Slack",            tag: "Team messaging",    Icon: Hash,      color: "#611F69" },
-  { name: "Notion",           tag: "Documentation",     Icon: FileText,  color: "#2F2F2F" },
-  { name: "GitHub",           tag: "Code & PRs",        Icon: GitFork,   color: "#1F6FEB" },
-  { name: "Google Calendar",  tag: "Scheduling",        Icon: Calendar,  color: "#1A73E8" },
+  { name: "Jira",             tag: "Project tracking",  Icon: Jira,           color: "#0052CC" },
+  { name: "Linear",           tag: "Issue tracking",    Icon: Linear,         color: "#5E6AD2" },
+  { name: "Slack",            tag: "Team messaging",    Icon: Slack,          color: "#611F69" },
+  { name: "Notion",           tag: "Documentation",     Icon: Notion,         color: "#2F2F2F" },
+  { name: "GitHub",           tag: "Code & PRs",        Icon: Github,         color: "#1F6FEB" },
+  { name: "Google Calendar",  tag: "Scheduling",        Icon: GoogleCalendar, color: "#1A73E8" },
 ];
 
 /* ─── Layout constant ────────────────────────────────────────────── */
@@ -885,7 +886,7 @@ export default function LandingPage() {
                       position: "relative",
                     }}
                   >
-                    <Icon size={19} strokeWidth={1.6} color={color} />
+                    <Icon width={22} height={22} />
                   </div>
                   {/* text */}
                   <div style={{ flex: 1, minWidth: 0 }}>
