@@ -3,288 +3,585 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contxt — Pitch Deck v2</title>
+<title>Contxt — Pitch Deck</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Cormorant+Garamond:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: #141414;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-    padding: 24px;
+    background: #111;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; font-family: 'DM Sans', sans-serif; padding: 24px;
   }
   .deck { width: 100%; max-width: 960px; }
-  .slide { display: none; width: 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; border-radius: 12px; }
+  .slide {
+    display: none; width: 100%; aspect-ratio: 16/9;
+    position: relative; overflow: hidden;
+    border-radius: 12px; background: #09090B;
+  }
   .slide.active { display: flex; }
   .nav { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
-  .nav button { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+  .nav button {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; border-radius: 8px; padding: 7px 18px; font-size: 12px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s;
+  }
   .nav button:hover { background: rgba(255,255,255,0.13); }
   .nav button:disabled { opacity: 0.2; cursor: default; }
   .counter { color: rgba(255,255,255,0.3); font-size: 11px; letter-spacing: 0.1em; }
-
-  /* ── SLIDE 1: The Hook (unchanged) ── */
-  #s1 {
-    background: #09090B;
-    flex-direction: column;
-    justify-content: center;
-    padding: 8% 10%;
-  }
-  #s1 .eyebrow { font-family: 'DM Sans', sans-serif; font-size: clamp(9px,1.1vw,12px); font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 28px; }
-  #s1 .story { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,3.2vw,36px); color: #fff; line-height: 1.12; letter-spacing: -0.03em; max-width: 90%; }
-  #s1 .story em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.5); font-size: 1.1em; }
-  #s1 .pause { margin-top: 30px; font-family: 'DM Sans', sans-serif; font-size: clamp(11px,1.4vw,15px); color: rgba(255,255,255,0.32); font-weight: 300; line-height: 1.7; max-width: 58%; }
-  #s1 .corner { position:absolute; right:0; bottom:0; width:35%; height:100%; background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.018) 50%); }
-
-  /* ── SLIDE 2: Problem → Solution ── */
-  #s2 { background: #09090B; flex-direction: row; }
-  #s2 .left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 7% 8% 9%; border-right: 1px solid rgba(255,255,255,0.06); }
-  #s2 .right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 9% 8% 7%; }
-  #s2 .micro { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 20px; }
-  #s2 .big-stat { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(36px,6vw,72px); color: #fff; letter-spacing: -0.04em; line-height: 1; margin-bottom: 10px; }
-  #s2 .stat-sub { font-family: 'DM Sans', sans-serif; font-size: clamp(11px,1.3vw,14px); color: rgba(255,255,255,0.28); font-weight: 300; line-height: 1.5; }
-  #s2 .tool-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 24px; }
-  #s2 .tp { font-size: clamp(8px,0.9vw,10px); font-weight: 500; color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 3px 10px; letter-spacing: 0.03em; }
-  #s2 .product { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(40px,6.5vw,76px); color: #fff; letter-spacing: -0.045em; line-height: 0.95; margin-bottom: 14px; }
-  #s2 .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(16px,2.2vw,26px); color: rgba(255,255,255,0.38); letter-spacing: 0.01em; line-height: 1.3; }
-
-  /* ── SLIDE 3: The Graph (matches real app) ── */
-  #s3 { background: #09090B; flex-direction: column; padding: 4% 5%; }
-  #s3 .chrome { background: #fafaf9; border-radius: 10px; flex: 1; overflow: hidden; position: relative; border: 1px solid #e4e4e7; display: flex; flex-direction: column; }
-  #s3 .chrome-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid #e4e4e7; background: #fff; flex-shrink: 0; }
-  #s3 .chrome-title { font-size: 11px; font-weight: 600; color: #3f3f46; font-family: 'DM Sans', sans-serif; }
-  #s3 .chrome-stats { display: flex; gap: 12px; font-size: 10px; color: #a1a1aa; font-family: 'DM Sans', sans-serif; }
-  #s3 .graph-area { flex: 1; position: relative; overflow: hidden; }
-
-  /* dot grid background matching app */
-  #s3 .graph-area::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
-    background-size: 24px 24px;
-    opacity: 0.5;
+  .label {
+    font-size: clamp(8px,0.85vw,10px); font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.18);
   }
 
-  #s3 .slide-label { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); margin-bottom: 10px; }
+  /* ── S1: Hook ── */
+  #s1 { flex-direction: column; justify-content: center; padding: 8% 10%; }
+  #s1 .eyebrow { font-size: clamp(9px,1vw,11px); font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 34px; }
+  #s1 .headline { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,3.4vw,42px); color: #fff; line-height: 1.1; letter-spacing: -0.035em; max-width: 76%; margin-bottom: 28px; }
+  #s1 .headline em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.42); font-size: 1.08em; }
+  #s1 .sub { font-size: clamp(11px,1.25vw,14px); color: rgba(255,255,255,0.26); font-weight: 300; line-height: 1.72; max-width: 48%; }
+  #s1 .corner { position: absolute; right: 0; bottom: 0; width: 40%; height: 100%; background: linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.013) 45%); }
 
-  /* ── SLIDE 4: Vision + Traction ── */
-  #s4 { background: #09090B; flex-direction: column; justify-content: center; padding: 8% 10%; }
-  #s4 .micro { font-size: clamp(8px,0.9vw,10px); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 22px; }
-  #s4 .vision { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px,3.6vw,42px); color: #fff; line-height: 1.12; letter-spacing: -0.035em; max-width: 72%; margin-bottom: 44px; }
-  #s4 .vision em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.4); }
-  #s4 .stats { display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 28px; }
-  #s4 .stat { flex: 1; padding-right: 32px; border-right: 1px solid rgba(255,255,255,0.07); margin-right: 32px; }
-  #s4 .stat:last-child { border: none; margin: 0; padding: 0; }
-  #s4 .stat-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,2.8vw,32px); color: #fff; letter-spacing: -0.04em; line-height: 1; margin-bottom: 6px; }
-  #s4 .stat-l { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.25); line-height: 1.5; font-family: 'DM Sans', sans-serif; }
+  /* ── S2: Problem ── */
+  #s2 { flex-direction: row; }
+  #s2 .left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 6% 8% 9%; border-right: 1px solid rgba(255,255,255,0.06); }
+  #s2 .right { flex: 1.1; display: flex; flex-direction: column; justify-content: center; padding: 8% 9% 8% 7%; }
+  #s2 .big-stat { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(52px,8.5vw,92px); color: #fff; letter-spacing: -0.05em; line-height: 0.88; margin-bottom: 12px; }
+  #s2 .big-stat span { font-size: 0.46em; opacity: 0.55; }
+  #s2 .stat-label { font-size: clamp(11px,1.2vw,13px); color: rgba(255,255,255,0.28); font-weight: 300; line-height: 1.6; margin-bottom: 6px; }
+  #s2 .source { font-size: clamp(7px,0.75vw,9px); color: rgba(255,255,255,0.13); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 26px; }
+  #s2 .tool-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 22px; }
+  #s2 .tp { font-size: clamp(8px,0.82vw,9px); font-weight: 500; color: rgba(255,255,255,0.26); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 3px 10px; letter-spacing: 0.03em; }
+  #s2 .second-stat { padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.06); }
+  #s2 .second-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(20px,2.8vw,32px); color: rgba(255,255,255,0.65); letter-spacing: -0.04em; margin-bottom: 4px; }
+  #s2 .second-l { font-size: clamp(9px,0.95vw,11px); color: rgba(255,255,255,0.22); line-height: 1.55; font-weight: 300; }
+  #s2 .insight-head { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(16px,2.2vw,26px); color: #fff; line-height: 1.15; letter-spacing: -0.025em; margin-bottom: 22px; }
+  #s2 .insight-head em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.38); }
+  #s2 .insight-list { display: flex; flex-direction: column; gap: 13px; }
+  #s2 .insight-item { display: flex; align-items: flex-start; gap: 11px; }
+  #s2 .insight-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.22); flex-shrink: 0; margin-top: 7px; }
+  #s2 .insight-text { font-size: clamp(10px,1.05vw,12px); color: rgba(255,255,255,0.32); line-height: 1.6; font-weight: 300; }
 
-  /* ── SLIDE 5: The Ask ── */
-  #s5 { background: #09090B; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8% 14%; }
-  #s5 .wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(12px,1.5vw,17px); color: rgba(255,255,255,0.22); letter-spacing: -0.02em; margin-bottom: 26px; }
-  #s5 .ask { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px,3.6vw,42px); color: #fff; line-height: 1.1; letter-spacing: -0.035em; margin-bottom: 16px; }
-  #s5 .ask em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.4); font-size: 1.08em; }
-  #s5 .sub { font-size: clamp(11px,1.3vw,14px); color: rgba(255,255,255,0.25); margin-bottom: 36px; font-weight: 300; }
-  #s5 .bot-pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 8px 18px 8px 10px; }
-  #s5 .bot-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
-  #s5 .bot-url { font-size: clamp(10px,1.1vw,12px); color: rgba(255,255,255,0.4); letter-spacing: 0.03em; font-family: 'DM Sans', sans-serif; }
+  /* ── S3: Solution ── */
+  #s3 { flex-direction: row; }
+  #s3 .left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 6% 8% 9%; border-right: 1px solid rgba(255,255,255,0.06); }
+  #s3 .right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 9% 8% 7%; }
+  #s3 .product { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(38px,6.2vw,72px); color: #fff; letter-spacing: -0.048em; line-height: 0.9; margin-bottom: 14px; }
+  #s3 .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; font-size: clamp(14px,1.9vw,22px); color: rgba(255,255,255,0.34); line-height: 1.38; margin-bottom: 26px; }
+  #s3 .badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; padding: 5px 12px 5px 8px; }
+  #s3 .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+  #s3 .badge-text { font-size: clamp(9px,0.95vw,11px); color: rgba(255,255,255,0.28); letter-spacing: 0.03em; }
+  #s3 .steps { display: flex; flex-direction: column; gap: 20px; }
+  #s3 .step { display: flex; align-items: flex-start; gap: 14px; }
+  #s3 .step-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(9px,1.1vw,12px); color: rgba(255,255,255,0.16); letter-spacing: -0.01em; width: 18px; flex-shrink: 0; padding-top: 2px; }
+  #s3 .step-title { font-size: clamp(11px,1.25vw,14px); font-weight: 600; color: rgba(255,255,255,0.72); margin-bottom: 4px; }
+  #s3 .step-desc { font-size: clamp(9px,0.98vw,11px); color: rgba(255,255,255,0.27); font-weight: 300; line-height: 1.58; }
+
+  /* ── S4: Why Telegram ── */
+  #s4 { flex-direction: column; justify-content: center; padding: 6% 9%; }
+  #s4 .tg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; margin-top: 22px; }
+  #s4 .tg-point { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  #s4 .tg-point:nth-child(5),
+  #s4 .tg-point:nth-child(6) { border-bottom: none; }
+  #s4 .tg-claim { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(11px,1.4vw,16px); color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
+  #s4 .tg-fact { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.3); font-weight: 300; line-height: 1.6; margin-top: 3px; }
+  #s4 .tg-source { font-size: clamp(7px,0.72vw,8px); color: rgba(255,255,255,0.14); letter-spacing: 0.07em; text-transform: uppercase; margin-top: 4px; }
+  #s4 .tg-head { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(18px,2.8vw,34px); color: #fff; letter-spacing: -0.03em; line-height: 1.1; }
+  #s4 .tg-head em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.35); }
+
+  /* ── S5: Product ── */
+  #s5 { flex-direction: column; padding: 4% 5%; }
+  #s5 .chrome { background: #fafaf9; border-radius: 10px; flex: 1; overflow: hidden; position: relative; border: 1px solid #e4e4e7; display: flex; flex-direction: column; }
+  #s5 .chrome-bar { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-bottom: 1px solid #e4e4e7; background: #fff; flex-shrink: 0; }
+  #s5 .chrome-title { font-size: 11px; font-weight: 600; color: #3f3f46; }
+  #s5 .chrome-stats { display: flex; gap: 12px; font-size: 10px; color: #a1a1aa; }
+  #s5 .graph-area { flex: 1; position: relative; overflow: hidden; }
+  #s5 .graph-area::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px); background-size: 24px 24px; opacity: 0.5; }
+  #s5 .slide-label { margin-bottom: 10px; }
+  #s5 .tg-card { position: absolute; bottom: 14px; right: 14px; z-index: 10; background: #fff; border-radius: 10px; border: 1px solid #e4e4e7; padding: 10px 12px; width: 192px; box-shadow: 0 2px 14px rgba(0,0,0,0.07); }
+  #s5 .tg-header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  #s5 .tg-avatar { width: 18px; height: 18px; border-radius: 50%; background: #229ED9; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  #s5 .tg-name { font-size: 9px; font-weight: 600; color: #3f3f46; }
+  #s5 .tg-msg { font-size: 9px; color: #52525b; line-height: 1.5; }
+  #s5 .tg-time { font-size: 8px; color: #a1a1aa; margin-top: 5px; }
+
+  /* ── S6: AI Layer ── */
+  #s6 { flex-direction: column; justify-content: center; padding: 6.5% 9%; }
+  #s6 .ai-cols { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0; margin-top: 22px; flex: 1; }
+  #s6 .ai-sep { background: rgba(255,255,255,0.07); }
+  #s6 .ai-col { padding: 0 36px; display: flex; flex-direction: column; justify-content: center; }
+  #s6 .ai-col:first-child { padding-left: 0; }
+  #s6 .ai-col:last-child { padding-right: 0; }
+  #s6 .ai-state { font-size: clamp(8px,0.82vw,9px); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.18); margin-bottom: 14px; }
+  #s6 .ai-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(15px,2vw,24px); color: #fff; letter-spacing: -0.025em; line-height: 1.12; margin-bottom: 12px; }
+  #s6 .ai-title em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.36); }
+  #s6 .ai-desc { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.28); font-weight: 300; line-height: 1.65; margin-bottom: 18px; }
+  #s6 .ai-dots { display: flex; gap: 8px; flex-wrap: wrap; }
+  #s6 .ai-dot-item { display: flex; align-items: center; gap: 7px; }
+  #s6 .ai-dot-circle { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; }
+  #s6 .ai-dot-label { font-size: clamp(8px,0.85vw,10px); color: rgba(255,255,255,0.22); }
+  #s6 .ai-isolated { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px; }
+  #s6 .ai-iso-node { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; }
+  #s6 .ai-connected { position: relative; width: 100%; height: 60px; margin-bottom: 14px; }
+  #s6 .ai-bar { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; gap: 24px; }
+  #s6 .ai-bar-item { display: flex; flex-direction: column; gap: 3px; }
+  #s6 .ai-bar-label { font-size: clamp(8px,0.82vw,9px); letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+  #s6 .ai-bar-val { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.45); font-weight: 500; }
+  #s6 .ai-head { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(18px,2.8vw,34px); color: #fff; letter-spacing: -0.03em; line-height: 1.1; }
+  #s6 .ai-head em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.35); }
+  #s6 .ai-queries { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  #s6 .ai-query { display: flex; align-items: flex-start; gap: 10px; }
+  #s6 .ai-q-mark { font-size: clamp(9px,0.95vw,11px); color: rgba(255,255,255,0.2); flex-shrink: 0; padding-top: 1px; }
+  #s6 .ai-q-text { font-size: clamp(9px,0.98vw,11px); color: rgba(255,255,255,0.52); line-height: 1.55; }
+  #s6 .ai-q-ans { font-size: clamp(9px,0.98vw,11px); color: rgba(255,255,255,0.25); font-style: italic; line-height: 1.45; }
+
+  /* ── S7: Market ── */
+  #s7 { flex-direction: column; justify-content: center; padding: 7% 9%; }
+  #s7 .market-row { display: flex; align-items: flex-end; gap: 0; margin-bottom: 34px; }
+  #s7 .market-stat { flex: 1; }
+  #s7 .market-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(34px,5.2vw,58px); color: #fff; letter-spacing: -0.05em; line-height: 0.9; margin-bottom: 8px; }
+  #s7 .market-l { font-size: clamp(10px,1.05vw,12px); color: rgba(255,255,255,0.28); line-height: 1.55; }
+  #s7 .market-l span { color: rgba(255,255,255,0.16); }
+  #s7 .market-sep { width: 1px; height: 46px; background: rgba(255,255,255,0.07); margin: 0 32px 8px; flex-shrink: 0; }
+  #s7 .comp-table { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 22px; }
+  #s7 .comp-head { display: flex; padding-bottom: 10px; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+  #s7 .c-name { width: 22%; }
+  #s7 .c-price { width: 20%; }
+  #s7 .c-tags { flex: 1; }
+  #s7 .comp-row { display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  #s7 .comp-row:last-child { border: none; }
+  #s7 .cn { font-size: clamp(10px,1.08vw,12px); font-weight: 600; color: rgba(255,255,255,0.38); width: 22%; }
+  #s7 .cn.us { color: #fff; }
+  #s7 .cp { font-size: clamp(9px,0.98vw,11px); color: rgba(255,255,255,0.22); width: 20%; }
+  #s7 .cp.us { color: rgba(255,255,255,0.55); }
+  #s7 .ctags { flex: 1; display: flex; gap: 5px; flex-wrap: wrap; }
+  #s7 .tag { font-size: clamp(8px,0.82vw,9px); color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 4px; padding: 2px 7px; }
+  #s7 .tag.on { color: rgba(255,255,255,0.52); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.13); }
+  #s7 .tag.off { color: rgba(255,255,255,0.16); text-decoration: line-through; }
+
+  /* ── S8: Business + Traction ── */
+  #s8 { flex-direction: row; }
+  #s8 .left { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 6% 8% 9%; border-right: 1px solid rgba(255,255,255,0.06); }
+  #s8 .right { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 9% 8% 6%; }
+  #s8 .model-sub { font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.22); font-weight: 300; margin-bottom: 20px; margin-top: 4px; }
+  #s8 .plan-row { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  #s8 .plan-row:last-of-type { border: none; }
+  #s8 .plan-name { font-size: clamp(10px,1.08vw,12px); font-weight: 500; color: rgba(255,255,255,0.42); width: 28%; }
+  #s8 .plan-price { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(14px,1.9vw,22px); color: #fff; letter-spacing: -0.03em; width: 36%; }
+  #s8 .plan-price span { font-size: 0.54em; opacity: 0.5; }
+  #s8 .plan-detail { font-size: clamp(9px,0.92vw,10.5px); color: rgba(255,255,255,0.2); line-height: 1.45; flex: 1; }
+  #s8 .note { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); font-size: clamp(9px,1vw,11px); color: rgba(255,255,255,0.18); font-weight: 300; line-height: 1.65; font-style: italic; }
+  #s8 .tr-items { display: flex; flex-direction: column; gap: 18px; margin-top: 4px; }
+  #s8 .tr-item { display: flex; align-items: flex-start; gap: 14px; }
+  #s8 .tr-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(16px,2.2vw,24px); color: #fff; letter-spacing: -0.04em; line-height: 1; min-width: 52px; }
+  #s8 .tr-l { font-size: clamp(9px,0.98vw,11px); color: rgba(255,255,255,0.26); line-height: 1.55; padding-top: 3px; font-weight: 300; }
+
+  /* ── S9: Ask ── */
+  #s9 { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8% 15%; }
+  #s9 .wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(11px,1.4vw,16px); color: rgba(255,255,255,0.16); letter-spacing: -0.02em; margin-bottom: 30px; }
+  #s9 .ask { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(22px,3.8vw,46px); color: #fff; line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 16px; }
+  #s9 .ask em { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; color: rgba(255,255,255,0.38); font-size: 1.08em; }
+  #s9 .sub { font-size: clamp(11px,1.3vw,14px); color: rgba(255,255,255,0.24); margin-bottom: 38px; font-weight: 300; line-height: 1.72; }
+  #s9 .pill { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 8px 18px 8px 10px; }
+  #s9 .pill-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
+  #s9 .pill-text { font-size: clamp(10px,1.1vw,12px); color: rgba(255,255,255,0.36); letter-spacing: 0.03em; }
 </style>
 </head>
 <body>
 <div class="deck">
 
-  <!-- ── SLIDE 1: The Hook ── -->
+  <!-- 1 · Hook -->
   <div class="slide active" id="s1">
     <div class="corner"></div>
     <div class="eyebrow">Contxt &nbsp;·&nbsp; Demo Day</div>
-    <div class="story">
-      It's 9am. 4&nbsp;meetings.<br>You'll know nothing new by noon.
+    <div class="headline">
+      The meeting didn't tell you<br>
+      anything your <em>tools already knew.</em>
     </div>
-    <div class="pause">
-      Your team already knows what's happening. They just have no way to share it without wasting everyone's time.
+    <div class="sub">
+      Your team's work lives across 6 different tools.<br>
+      Nobody reads all of them. So everyone meets.
     </div>
   </div>
 
-  <!-- ── SLIDE 2: Problem → Solution ── -->
+  <!-- 2 · Problem -->
   <div class="slide" id="s2">
     <div class="left">
-      <div class="micro">The Problem</div>
-      <div class="big-stat">23 hrs</div>
-      <div class="stat-sub">wasted in meetings<br>every week per manager</div>
+      <div class="label" style="margin-bottom:16px">The Problem</div>
+      <div class="big-stat">5.8<span>hrs</span></div>
+      <div class="stat-label">wasted in unnecessary meetings<br>per manager, every week</div>
+      <div class="source">Reclaim.ai · 2024 Smart Meetings Report · 1,300 professionals</div>
       <div class="tool-row">
         <span class="tp">Jira</span><span class="tp">Linear</span><span class="tp">Slack</span>
         <span class="tp">GitHub</span><span class="tp">Google Cal</span><span class="tp">Notion</span>
       </div>
+      <div class="second-stat">
+        <div class="second-n">78%</div>
+        <div class="second-l">say meetings block their real work<span style="display:block;margin-top:2px">— Atlassian, 2024 · 5,000 knowledge workers</span></div>
+      </div>
     </div>
     <div class="right">
-      <div class="micro">The Solution</div>
-      <div class="product">Contxt</div>
-      <div class="tagline">The brain of your company.<br>No meeting required.</div>
+      <div class="label" style="margin-bottom:16px">The Real Problem</div>
+      <div class="insight-head">Your tools are<br><em>islands.</em></div>
+      <div class="insight-list">
+        <div class="insight-item">
+          <div class="insight-dot"></div>
+          <div class="insight-text">Every tool holds a slice of the truth — none have the whole picture</div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-dot"></div>
+          <div class="insight-text">Someone must read all of them, synthesize, and schedule a meeting</div>
+        </div>
+        <div class="insight-item">
+          <div class="insight-dot"></div>
+          <div class="insight-text">By the time the meeting happens, the information is already stale</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ── SLIDE 3: Graph (matches real app) ── -->
+  <!-- 3 · Solution -->
   <div class="slide" id="s3">
-    <div class="slide-label">How it works</div>
+    <div class="left">
+      <div class="label" style="margin-bottom:16px">The Solution</div>
+      <div class="product">Contxt</div>
+      <div class="tagline">One live surface.<br>No meeting required.</div>
+      <div class="badge">
+        <div class="badge-dot"></div>
+        <div class="badge-text">Telegram-native · zero new habits</div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="label" style="margin-bottom:20px">How it works</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <div>
+            <div class="step-title">Connect your tools</div>
+            <div class="step-desc">Jira, Linear, Slack, GitHub, Google Cal, Notion — one setup, done.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <div>
+            <div class="step-title">Team updates via Telegram</div>
+            <div class="step-desc">Each member sends a 30-second update through the bot — no app switch, no new login.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <div>
+            <div class="step-title">Live team graph + AI layer</div>
+            <div class="step-desc">Who's working on what, blockers, calendar — real-time, queryable by your whole team.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 · Why Telegram -->
+  <div class="slide" id="s4">
+    <div class="label">Why Telegram</div>
+    <div class="tg-head" style="margin-top:10px">
+      Not a workaround.<br><em>A deliberate choice.</em>
+    </div>
+    <div class="tg-grid">
+      <div class="tg-point">
+        <div class="tg-claim">Already open. Zero friction.</div>
+        <div class="tg-fact">1 billion monthly active users. Your team is already there — no new download, no new account, no onboarding cost to you or them.</div>
+        <div class="tg-source">Durov · March 2025 — confirmed 1B+ MAU</div>
+      </div>
+      <div class="tg-point">
+        <div class="tg-claim">The bot infrastructure is free.</div>
+        <div class="tg-fact">Slack costs $7–12/user/month just for the workspace bots live in. Telegram's Bot API is permanently free. No platform tax. No per-seat charge for the channel itself.</div>
+        <div class="tg-source">Slack pricing · Telegram Bot API docs</div>
+      </div>
+      <div class="tg-point">
+        <div class="tg-claim">Your exact customers are already there.</div>
+        <div class="tg-fact">IT and tech professionals are 20.6% of Telegram's user base — the single largest occupational segment. We're not acquiring a new audience. We're meeting them where they already are.</div>
+        <div class="tg-source">Telegram Demographics, 2025</div>
+      </div>
+      <div class="tg-point">
+        <div class="tg-claim">No ad company owns your team's data.</div>
+        <div class="tg-fact">Slack is Salesforce. WhatsApp is Meta. Telegram is independently held, no ads, no data profiling, no surveillance model. MTProto 2.0 — built from the ground up to avoid exactly that.</div>
+        <div class="tg-source">Telegram · "no ads, no data mining" policy</div>
+      </div>
+      <div class="tg-point">
+        <div class="tg-claim">Blue ocean. Nobody is here yet.</div>
+        <div class="tg-fact">Slack has 2,400+ integrations. Telegram has 10 million bots — and virtually zero enterprise team intelligence tools. We're entering before the space is crowded.</div>
+        <div class="tg-source">Slack App Directory · Telegram ecosystem data</div>
+      </div>
+      <div class="tg-point">
+        <div class="tg-claim">Users already know how to use bots.</div>
+        <div class="tg-fact">1.2 billion bot interactions happen on Telegram every month. The behavior — messaging a bot to get things done — is already learned. We don't teach a new habit. We use one that exists.</div>
+        <div class="tg-source">Telegram, 2025 · Business of Apps</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 · Product -->
+  <div class="slide" id="s5">
+    <div class="label slide-label">The product — live</div>
     <div class="chrome">
       <div class="chrome-bar">
         <span class="chrome-title">Team graph</span>
         <div class="chrome-stats">
-          <span>9 members</span>
-          <span>·</span>
-          <span>6 tools</span>
-          <span>·</span>
-          <span>24 tasks in flight</span>
-          <span>·</span>
+          <span>9 members</span><span>·</span><span>6 tools</span><span>·</span>
+          <span>24 tasks in flight</span><span>·</span>
           <span style="color:#4ade80">● live</span>
         </div>
       </div>
       <div class="graph-area">
-        <svg width="100%" height="100%" style="position:absolute;top:0;left:0;">
-
-          <!-- Tool-to-member edges (outer → inner) -->
-          <!-- Member 1 (50%,50%) → Tools -->
-          <line x1="50%" y1="50%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.35"/>
-          <line x1="50%" y1="50%" x2="82%" y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.35"/>
-          <line x1="50%" y1="50%" x2="88%" y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.35"/>
-          <line x1="50%" y1="50%" x2="70%" y2="87%" stroke="#611F69" stroke-width="1" opacity="0.35"/>
-          <line x1="50%" y1="50%" x2="30%" y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.35"/>
-          <line x1="50%" y1="50%" x2="12%" y2="55%" stroke="#191919" stroke-width="1" opacity="0.25"/>
-          <line x1="50%" y1="50%" x2="18%" y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.35"/>
-
-          <!-- Member ring edges -->
-          <line x1="68%" y1="30%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.25"/>
-          <line x1="68%" y1="30%" x2="82%" y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.25"/>
-          <line x1="74%" y1="68%" x2="88%" y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.25"/>
-          <line x1="74%" y1="68%" x2="70%" y2="87%" stroke="#611F69" stroke-width="1" opacity="0.25"/>
-          <line x1="32%" y1="68%" x2="30%" y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.25"/>
-          <line x1="32%" y1="68%" x2="12%" y2="55%" stroke="#191919" stroke-width="1" opacity="0.2"/>
-          <line x1="26%" y1="32%" x2="18%" y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.25"/>
-          <line x1="26%" y1="32%" x2="50%" y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.2"/>
-
-          <!-- Task nodes (small dots along edges) -->
+        <svg width="100%" height="100%" style="position:absolute;top:0;left:0">
+          <line x1="50%" y1="50%" x2="50%"  y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.28"/>
+          <line x1="50%" y1="50%" x2="82%"  y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.28"/>
+          <line x1="50%" y1="50%" x2="88%"  y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.28"/>
+          <line x1="50%" y1="50%" x2="70%"  y2="87%" stroke="#611F69" stroke-width="1" opacity="0.28"/>
+          <line x1="50%" y1="50%" x2="30%"  y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.28"/>
+          <line x1="50%" y1="50%" x2="12%"  y2="55%" stroke="#555"    stroke-width="1" opacity="0.18"/>
+          <line x1="50%" y1="50%" x2="18%"  y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.28"/>
+          <line x1="68%" y1="30%" x2="50%"  y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.18"/>
+          <line x1="68%" y1="30%" x2="82%"  y2="20%" stroke="#0052CC" stroke-width="1" opacity="0.18"/>
+          <line x1="74%" y1="68%" x2="88%"  y2="55%" stroke="#5E6AD2" stroke-width="1" opacity="0.18"/>
+          <line x1="74%" y1="68%" x2="70%"  y2="87%" stroke="#611F69" stroke-width="1" opacity="0.18"/>
+          <line x1="32%" y1="68%" x2="30%"  y2="87%" stroke="#1F6FEB" stroke-width="1" opacity="0.18"/>
+          <line x1="32%" y1="68%" x2="12%"  y2="55%" stroke="#555"    stroke-width="1" opacity="0.14"/>
+          <line x1="26%" y1="32%" x2="18%"  y2="20%" stroke="#1A73E8" stroke-width="1" opacity="0.18"/>
+          <line x1="26%" y1="32%" x2="50%"  y2="8%"  stroke="#1A73E8" stroke-width="1" opacity="0.14"/>
           <circle cx="59%" cy="29%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
           <circle cx="66%" cy="35%" r="3" fill="#0052CC55" stroke="#0052CC" stroke-width="1"/>
           <circle cx="70%" cy="52%" r="3" fill="#5E6AD255" stroke="#5E6AD2" stroke-width="1"/>
           <circle cx="62%" cy="69%" r="3" fill="#611F6955" stroke="#611F69" stroke-width="1"/>
           <circle cx="40%" cy="69%" r="3" fill="#1F6FEB55" stroke="#1F6FEB" stroke-width="1"/>
-          <circle cx="30%" cy="52%" r="3" fill="#19191955" stroke="#71717a" stroke-width="1"/>
+          <circle cx="30%" cy="52%" r="3" fill="#55555555" stroke="#71717a" stroke-width="1"/>
           <circle cx="34%" cy="36%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
-          <circle cx="50%" cy="29%" r="3" fill="#1A73E855" stroke="#1A73E8" stroke-width="1"/>
-
-          <!-- ── Member nodes (inner ring, 14x14 → r=7) ── -->
-          <!-- Center member -->
-          <circle cx="50%" cy="50%" r="7" fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
-          <circle cx="50%" cy="50%" r="11" fill="none" stroke="#6366f122" stroke-width="3"/>
-
-          <!-- Ring members -->
-          <circle cx="68%" cy="30%" r="7" fill="#8b5cf6" stroke="#8b5cf6" stroke-width="2"/>
-          <circle cx="68%" cy="30%" r="11" fill="none" stroke="#8b5cf622" stroke-width="3"/>
-
-          <circle cx="74%" cy="68%" r="7" fill="#ec4899" stroke="#ec4899" stroke-width="2"/>
-          <circle cx="74%" cy="68%" r="11" fill="none" stroke="#ec489922" stroke-width="3"/>
-
-          <circle cx="32%" cy="68%" r="7" fill="#f59e0b" stroke="#f59e0b" stroke-width="2"/>
-          <circle cx="32%" cy="68%" r="11" fill="none" stroke="#f59e0b22" stroke-width="3"/>
-
-          <circle cx="26%" cy="32%" r="7" fill="#10b981" stroke="#10b981" stroke-width="2"/>
-          <circle cx="26%" cy="32%" r="11" fill="none" stroke="#10b98122" stroke-width="3"/>
-
-          <circle cx="50%" cy="68%" r="7" fill="#3b82f6" stroke="#3b82f6" stroke-width="2"/>
-          <circle cx="50%" cy="68%" r="11" fill="none" stroke="#3b82f622" stroke-width="3"/>
-
-          <circle cx="68%" cy="50%" r="7" fill="#ef4444" stroke="#ef4444" stroke-width="2"/>
-          <circle cx="68%" cy="50%" r="11" fill="none" stroke="#ef444422" stroke-width="3"/>
-
-          <circle cx="32%" cy="50%" r="7" fill="#14b8a6" stroke="#14b8a6" stroke-width="2"/>
-          <circle cx="32%" cy="50%" r="11" fill="none" stroke="#14b8a622" stroke-width="3"/>
-
-          <!-- ── Tool nodes (outer ring, 20x20 → r=10) ── -->
-          <!-- GCal top -->
-          <circle cx="50%" cy="8%" r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2.5"/>
-          <circle cx="50%" cy="8%" r="14" fill="none" stroke="#1A73E833" stroke-width="3"/>
-
-          <!-- Jira top-right -->
-          <circle cx="82%" cy="20%" r="10" fill="#0052CC" stroke="#0052CC" stroke-width="2.5"/>
-          <circle cx="82%" cy="20%" r="14" fill="none" stroke="#0052CC33" stroke-width="3"/>
-
-          <!-- Linear right -->
-          <circle cx="88%" cy="55%" r="10" fill="#5E6AD2" stroke="#5E6AD2" stroke-width="2.5"/>
-          <circle cx="88%" cy="55%" r="14" fill="none" stroke="#5E6AD233" stroke-width="3"/>
-
-          <!-- Slack bottom-right -->
-          <circle cx="70%" cy="87%" r="10" fill="#611F69" stroke="#611F69" stroke-width="2.5"/>
-          <circle cx="70%" cy="87%" r="14" fill="none" stroke="#611F6933" stroke-width="3"/>
-
-          <!-- GitHub bottom-left -->
-          <circle cx="30%" cy="87%" r="10" fill="#1F6FEB" stroke="#1F6FEB" stroke-width="2.5"/>
-          <circle cx="30%" cy="87%" r="14" fill="none" stroke="#1F6FEB33" stroke-width="3"/>
-
-          <!-- Notion left -->
-          <circle cx="12%" cy="55%" r="10" fill="#444" stroke="#555" stroke-width="2.5"/>
-          <circle cx="12%" cy="55%" r="14" fill="none" stroke="#44444433" stroke-width="3"/>
-
-          <!-- GCal top-left -->
-          <circle cx="18%" cy="20%" r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2.5"/>
-          <circle cx="18%" cy="20%" r="14" fill="none" stroke="#1A73E833" stroke-width="3"/>
-
-          <!-- Tool labels -->
-          <text x="50%" y="4.5%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
-          <text x="86%" y="17%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#0052CC" opacity="0.7">Jira</text>
-          <text x="94%" y="53%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#5E6AD2" opacity="0.7">Linear</text>
-          <text x="73%" y="94%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#611F69" opacity="0.7">Slack</text>
-          <text x="27%" y="94%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1F6FEB" opacity="0.7">GitHub</text>
-          <text x="6%"  y="53%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#888" opacity="0.7">Notion</text>
-          <text x="14%" y="17%" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
-
+          <circle cx="50%" cy="50%" r="7"  fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
+          <circle cx="50%" cy="50%" r="11" fill="none"    stroke="#6366f122" stroke-width="3"/>
+          <circle cx="68%" cy="30%" r="7"  fill="#8b5cf6" stroke="#8b5cf6" stroke-width="2"/>
+          <circle cx="68%" cy="30%" r="11" fill="none"    stroke="#8b5cf622" stroke-width="3"/>
+          <circle cx="74%" cy="68%" r="7"  fill="#ec4899" stroke="#ec4899" stroke-width="2"/>
+          <circle cx="74%" cy="68%" r="11" fill="none"    stroke="#ec489922" stroke-width="3"/>
+          <circle cx="32%" cy="68%" r="7"  fill="#f59e0b" stroke="#f59e0b" stroke-width="2"/>
+          <circle cx="32%" cy="68%" r="11" fill="none"    stroke="#f59e0b22" stroke-width="3"/>
+          <circle cx="26%" cy="32%" r="7"  fill="#10b981" stroke="#10b981" stroke-width="2"/>
+          <circle cx="26%" cy="32%" r="11" fill="none"    stroke="#10b98122" stroke-width="3"/>
+          <circle cx="50%" cy="68%" r="7"  fill="#3b82f6" stroke="#3b82f6" stroke-width="2"/>
+          <circle cx="50%" cy="68%" r="11" fill="none"    stroke="#3b82f622" stroke-width="3"/>
+          <circle cx="68%" cy="50%" r="7"  fill="#ef4444" stroke="#ef4444" stroke-width="2"/>
+          <circle cx="68%" cy="50%" r="11" fill="none"    stroke="#ef444422" stroke-width="3"/>
+          <circle cx="32%" cy="50%" r="7"  fill="#14b8a6" stroke="#14b8a6" stroke-width="2"/>
+          <circle cx="32%" cy="50%" r="11" fill="none"    stroke="#14b8a622" stroke-width="3"/>
+          <circle cx="50%" cy="8%"  r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2"/>
+          <circle cx="50%" cy="8%"  r="14" fill="none"    stroke="#1A73E833" stroke-width="2.5"/>
+          <circle cx="82%" cy="20%" r="10" fill="#0052CC" stroke="#0052CC" stroke-width="2"/>
+          <circle cx="82%" cy="20%" r="14" fill="none"    stroke="#0052CC33" stroke-width="2.5"/>
+          <circle cx="88%" cy="55%" r="10" fill="#5E6AD2" stroke="#5E6AD2" stroke-width="2"/>
+          <circle cx="88%" cy="55%" r="14" fill="none"    stroke="#5E6AD233" stroke-width="2.5"/>
+          <circle cx="70%" cy="87%" r="10" fill="#611F69" stroke="#611F69" stroke-width="2"/>
+          <circle cx="70%" cy="87%" r="14" fill="none"    stroke="#611F6933" stroke-width="2.5"/>
+          <circle cx="30%" cy="87%" r="10" fill="#1F6FEB" stroke="#1F6FEB" stroke-width="2"/>
+          <circle cx="30%" cy="87%" r="14" fill="none"    stroke="#1F6FEB33" stroke-width="2.5"/>
+          <circle cx="12%" cy="55%" r="10" fill="#444"    stroke="#555"    stroke-width="2"/>
+          <circle cx="12%" cy="55%" r="14" fill="none"    stroke="#44444433" stroke-width="2.5"/>
+          <circle cx="18%" cy="20%" r="10" fill="#1A73E8" stroke="#1A73E8" stroke-width="2"/>
+          <circle cx="18%" cy="20%" r="14" fill="none"    stroke="#1A73E833" stroke-width="2.5"/>
+          <text x="50%"  y="4.5%" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
+          <text x="86%"  y="17%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#0052CC" opacity="0.7">Jira</text>
+          <text x="94%"  y="53%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#5E6AD2" opacity="0.7">Linear</text>
+          <text x="73%"  y="94%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#611F69" opacity="0.7">Slack</text>
+          <text x="27%"  y="94%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#1F6FEB" opacity="0.7">GitHub</text>
+          <text x="6%"   y="53%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#888"    opacity="0.7">Notion</text>
+          <text x="14%"  y="17%"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="#1A73E8" opacity="0.7">GCal</text>
         </svg>
+        <div class="tg-card">
+          <div class="tg-header">
+            <div class="tg-avatar">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.25-2.04 9.61c-.15.67-.54.84-1.1.52l-3.04-2.24-1.47 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.62-5.08c.24-.22-.05-.34-.38-.12L8.74 13.9l-2.99-.94c-.65-.2-.66-.65.14-.96l11.67-4.5c.54-.2 1.02.13.93.71z"/></svg>
+            </div>
+            <div class="tg-name">Sara · updated just now</div>
+          </div>
+          <div class="tg-msg">Done with auth PR. Blocked on API review. Calendar clear tomorrow.</div>
+          <div class="tg-time">synced to graph automatically</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ── SLIDE 4: Vision + Traction ── -->
-  <div class="slide" id="s4">
-    <div class="micro">Vision</div>
-    <div class="vision">
-      Work from anywhere. Update anyone.<br>
-      No meeting. No laptop.<br>
-      Just your <em>phone.</em>
+  <!-- 6 · AI Layer -->
+  <div class="slide" id="s6">
+    <div class="label">The intelligence layer</div>
+    <div class="ai-head" style="margin-top:10px">
+      Enterprise AI is powerful.<br><em>It just doesn't know your company.</em>
     </div>
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-n">Day 1</div>
-        <div class="stat-l">First paying intent<br>before the product existed</div>
+    <div class="ai-cols">
+      <div class="ai-col">
+        <div class="ai-state">Without Contxt</div>
+        <div class="ai-title">100 seats.<br>100 isolated conversations.</div>
+        <div class="ai-desc">Every employee asks Claude something. Each session starts from zero — no knowledge of what the team is building, who's blocked, or what was decided last sprint. The AI is powerful but context-blind to your org.</div>
+        <div class="ai-isolated">
+          <div class="ai-iso-node"></div><div class="ai-iso-node"></div><div class="ai-iso-node"></div>
+          <div class="ai-iso-node"></div><div class="ai-iso-node"></div><div class="ai-iso-node"></div>
+          <div class="ai-iso-node"></div><div class="ai-iso-node"></div><div class="ai-iso-node"></div>
+        </div>
+        <div style="font-size:clamp(9px,0.95vw,11px);color:rgba(255,255,255,0.18);font-style:italic;line-height:1.6;">"What's blocking the backend team?" → doesn't know.<br>"Who's free to review my PR?" → doesn't know.</div>
       </div>
-      <div class="stat">
-        <div class="stat-n">Live</div>
-        <div class="stat-l">Deployed & running<br>first orgs onboarded today</div>
+      <div class="ai-sep"></div>
+      <div class="ai-col">
+        <div class="ai-state">With Contxt</div>
+        <div class="ai-title">One AI, powered by<br>your whole team's context.</div>
+        <div class="ai-desc">Contxt feeds Claude your live team graph — every member's status, active tasks, blockers, calendar, and all 6 integrated tools. The AI session belongs to the company, not the individual. Every query draws on collective knowledge.</div>
+        <div class="ai-queries">
+          <div class="ai-query">
+            <div class="ai-q-mark">Q</div>
+            <div>
+              <div class="ai-q-text">"What's blocking the backend team?"</div>
+              <div class="ai-q-ans">→ Knows. API review waiting since Tuesday. Sara free tomorrow.</div>
+            </div>
+          </div>
+          <div class="ai-query">
+            <div class="ai-q-mark">Q</div>
+            <div>
+              <div class="ai-q-text">"Is the sprint on track?"</div>
+              <div class="ai-q-ans">→ Knows. 7 of 12 tasks closed. 2 blockers unresolved.</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <div class="stat-n">6 tools</div>
-        <div class="stat-l">Jira · Linear · Slack<br>GitHub · GCal · Notion</div>
+    </div>
+    <div class="ai-bar">
+      <div class="ai-bar-item">
+        <div class="ai-bar-label">Powered by</div>
+        <div class="ai-bar-val">Claude · Anthropic</div>
       </div>
-      <div class="stat">
-        <div class="stat-n">0 friction</div>
-        <div class="stat-l">Uses Telegram —<br>already open all day</div>
+      <div style="width:1px;height:28px;background:rgba(255,255,255,0.07);flex-shrink:0"></div>
+      <div class="ai-bar-item">
+        <div class="ai-bar-label">Context window</div>
+        <div class="ai-bar-val">200K tokens — your full team history fits</div>
+      </div>
+      <div style="width:1px;height:28px;background:rgba(255,255,255,0.07);flex-shrink:0"></div>
+      <div class="ai-bar-item">
+        <div class="ai-bar-label">Data policy</div>
+        <div class="ai-bar-val">SOC 2 · never trains on your data</div>
+      </div>
+      <div style="width:1px;height:28px;background:rgba(255,255,255,0.07);flex-shrink:0"></div>
+      <div class="ai-bar-item">
+        <div class="ai-bar-label">The shift</div>
+        <div class="ai-bar-val">Personal productivity → collective intelligence</div>
       </div>
     </div>
   </div>
 
-  <!-- ── SLIDE 5: The Ask ── -->
-  <div class="slide" id="s5">
+  <!-- 7 · Market -->
+  <div class="slide" id="s7">
+    <div class="label" style="margin-bottom:20px">Market opportunity</div>
+    <div class="market-row">
+      <div class="market-stat">
+        <div class="market-n">$36B</div>
+        <div class="market-l">Team collaboration market · 2024<br><span>Grand View Research</span></div>
+      </div>
+      <div class="market-sep"></div>
+      <div class="market-stat">
+        <div class="market-n">14%</div>
+        <div class="market-l">CAGR through 2029<br><span>fastest growing segment</span></div>
+      </div>
+      <div class="market-sep"></div>
+      <div class="market-stat">
+        <div class="market-n">1B+</div>
+        <div class="market-l">Telegram monthly active users · 2025<br><span>our distribution, already in their pocket</span></div>
+      </div>
+    </div>
+    <div class="comp-table">
+      <div class="comp-head">
+        <div class="c-name">Tool</div>
+        <div class="c-price">Pricing</div>
+        <div class="c-tags">Capabilities</div>
+      </div>
+      <div class="comp-row">
+        <div class="cn">Geekbot</div>
+        <div class="cp">$3 / user / mo</div>
+        <div class="ctags"><span class="tag">Slack-only</span><span class="tag off">no graph</span><span class="tag off">no cross-tool data</span><span class="tag off">no AI layer</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="cn">Standuply</div>
+        <div class="cp">$149 / mo flat</div>
+        <div class="ctags"><span class="tag">Slack-only</span><span class="tag off">forms-based</span><span class="tag off">no graph</span><span class="tag off">no AI layer</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="cn">Range</div>
+        <div class="cp">~$8 / user / mo</div>
+        <div class="ctags"><span class="tag">check-ins only</span><span class="tag off">no Telegram</span><span class="tag off">no graph</span><span class="tag off">no AI layer</span></div>
+      </div>
+      <div class="comp-row">
+        <div class="cn us">Contxt</div>
+        <div class="cp us">$49 / team / mo</div>
+        <div class="ctags"><span class="tag on">Telegram-native</span><span class="tag on">live graph</span><span class="tag on">6 integrations</span><span class="tag on">Claude AI layer</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 · Business Model + Traction -->
+  <div class="slide" id="s8">
+    <div class="left">
+      <div class="label">Business model</div>
+      <div class="model-sub">SaaS · per workspace · billed monthly</div>
+      <div class="plan-row">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">Free</div>
+        <div class="plan-detail">3 members · 2 integrations</div>
+      </div>
+      <div class="plan-row">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">$49<span> / mo</span></div>
+        <div class="plan-detail">20 members · all 6 tools · full graph + AI</div>
+      </div>
+      <div class="plan-row">
+        <div class="plan-name">Scale</div>
+        <div class="plan-price">$149<span> / mo</span></div>
+        <div class="plan-detail">Unlimited members · priority support</div>
+      </div>
+      <div class="note">
+        A 10-person team pays less than the cost<br>
+        of one unnecessary all-hands meeting.
+      </div>
+    </div>
+    <div class="right">
+      <div class="label" style="margin-bottom:18px">Where we stand</div>
+      <div class="tr-items">
+        <div class="tr-item">
+          <div class="tr-n">Live</div>
+          <div class="tr-l">Product deployed · real database · Telegram bot active<br>first workspaces onboarded today</div>
+        </div>
+        <div class="tr-item">
+          <div class="tr-n">6</div>
+          <div class="tr-l">Integrations fully built<br>Jira · Linear · Slack · GitHub · GCal · Notion</div>
+        </div>
+        <div class="tr-item">
+          <div class="tr-n">1B+</div>
+          <div class="tr-l">Telegram users on our channel<br>zero acquisition cost for the interface</div>
+        </div>
+        <div class="tr-item">
+          <div class="tr-n">$0</div>
+          <div class="tr-l">Raised — built from conviction<br>no investors yet, no excuses either</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9 · Ask -->
+  <div class="slide" id="s9">
     <div class="wordmark">Contxt</div>
     <div class="ask">
-      We're not here for funding.<br>
-      We want <em>3 teams</em><br>
-      to run a pilot with us.
+      We're signing our<br>
+      <em>first 3 founding teams.</em>
     </div>
-    <div class="sub">If you know a team manager — introduce us tonight.</div>
-    <div class="bot-pill">
-      <div class="bot-dot"></div>
-      <div class="bot-url">t.me/contxt_bot &nbsp;·&nbsp; contxt.app</div>
+    <div class="sub">
+      Shape the roadmap. Lock the founding price.<br>
+      Know a team manager? Introduce us tonight.
+    </div>
+    <div class="pill">
+      <div class="pill-dot"></div>
+      <div class="pill-text">t.me/contxt_bot &nbsp;·&nbsp; contxt.app</div>
     </div>
   </div>
 
@@ -292,7 +589,7 @@
 
 <div class="nav">
   <button id="prev" onclick="go(-1)" disabled>← Prev</button>
-  <span class="counter" id="counter">1 / 5</span>
+  <span class="counter" id="counter">1 / 9</span>
   <button id="next" onclick="go(1)">Next →</button>
 </div>
 
