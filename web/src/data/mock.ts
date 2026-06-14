@@ -1,4 +1,4 @@
-import type { OrgData, Member, Integration } from "@/lib/api";
+import type { OrgData, Member, Integration, MemberSnapshot } from "@/lib/api";
 
 export const MOCK_ORG: OrgData = {
   id: "1",
@@ -20,6 +20,44 @@ export const MOCK_INTEGRATIONS: Integration[] = [
   { id: "1", service: "jira",   createdAt: new Date(Date.now() - 864e5 * 7).toISOString() },
   { id: "2", service: "slack",  createdAt: new Date(Date.now() - 864e5 * 7).toISOString() },
   { id: "3", service: "github", createdAt: new Date(Date.now() - 864e5 * 3).toISOString() },
+];
+
+export const MOCK_SNAPSHOTS: MemberSnapshot[] = [
+  {
+    memberId: "1",
+    activeTasks: [
+      { id: "t1", title: "Fix auth bug",        status: "in_progress", tool: "jira",   url: "#" },
+      { id: "t2", title: "Review PR #42",        status: "in_progress", tool: "github", url: "#" },
+      { id: "t3", title: "Deploy to staging",    status: "in_progress", tool: "slack",  url: "#" },
+    ],
+    blockers: [],
+    calendarStatus: "free",
+    lastActivity: { tool: "jira", description: "Moved STRIPE-41 to In Progress", timestamp: String(Math.floor(Date.now() / 1000) - 120) },
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    memberId: "2",
+    activeTasks: [
+      { id: "t4", title: "Write release notes",  status: "in_progress", tool: "notion", url: "#" },
+      { id: "t5", title: "Code review feedback", status: "in_progress", tool: "github", url: "#" },
+    ],
+    blockers: [{ description: "Blocked by Alex on API spec", source_tool: "jira" }],
+    calendarStatus: "busy",
+    lastActivity: { tool: "github", description: "Left 3 comments on PR #42", timestamp: String(Math.floor(Date.now() / 1000) - 840) },
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    memberId: "3",
+    activeTasks: [
+      { id: "t6", title: "Triage open issues",   status: "in_progress", tool: "jira",   url: "#" },
+      { id: "t7", title: "Update sprint board",  status: "in_progress", tool: "linear", url: "#" },
+      { id: "t8", title: "Sync with Sarah",      status: "in_progress", tool: "slack",  url: "#" },
+    ],
+    blockers: [],
+    calendarStatus: "free",
+    lastActivity: { tool: "linear", description: "Moved 4 tickets to Done", timestamp: String(Math.floor(Date.now() / 1000) - 3600) },
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 export type ActivityItem = {

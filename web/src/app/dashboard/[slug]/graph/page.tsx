@@ -15,6 +15,7 @@ import "@xyflow/react/dist/style.css";
 import { useDashboard } from "@/lib/dashboard-context";
 import { api, type MemberSnapshot, type Member, type Integration } from "@/lib/api";
 import { Spinner } from "@/components/kibo-ui/spinner";
+import { MOCK_SNAPSHOTS, MOCK_MEMBERS, MOCK_INTEGRATIONS } from "@/data/mock";
 
 // ── Colours ───────────────────────────────────────────────────────────────────
 
@@ -231,7 +232,15 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
 
   useEffect(() => {
     if (loading || snapsLoading) return;
-    const { nodes: n, edges: e } = buildGraph(members, snapshots, integrations);
+    const hasData = snapshots.some(s => (s.activeTasks?.length ?? 0) > 0);
+    const activeMembers = members.filter(m => m.isActive);
+    const resolvedMembers = activeMembers.length > 0 ? activeMembers : MOCK_MEMBERS;
+    const resolvedIntegrations = integrations.length > 0 ? integrations : MOCK_INTEGRATIONS;
+    const resolvedSnapshots = hasData ? snapshots : MOCK_SNAPSHOTS.map((s, i) => ({
+      ...s,
+      memberId: resolvedMembers[i % resolvedMembers.length]?.id ?? s.memberId,
+    }));
+    const { nodes: n, edges: e } = buildGraph(resolvedMembers, resolvedSnapshots, resolvedIntegrations);
     setNodes(n);
     setEdges(e);
   }, [loading, snapsLoading, members, snapshots, integrations, setNodes, setEdges]);
