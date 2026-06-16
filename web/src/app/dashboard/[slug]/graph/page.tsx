@@ -395,6 +395,8 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
   const [snapsLoading, setSnapsLoading] = useState(true);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [resolvedSnaps, setResolvedSnaps] = useState<MemberSnapshot[]>([]);
+  const [resolvedMems, setResolvedMems] = useState<Member[]>([]);
 
   const loadSnapshots = useCallback(async () => {
     setSnapsLoading(true);
@@ -417,6 +419,8 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
           ...s,
           memberId: resolvedMembers[i % resolvedMembers.length]?.id ?? s.memberId,
         }));
+    setResolvedSnaps(resolvedSnapshots);
+    setResolvedMems(resolvedMembers);
     const { nodes: n, edges: e } = buildGraph(resolvedMembers, resolvedSnapshots, resolvedIntegrations);
     setNodes(n);
     setEdges(e);
@@ -430,11 +434,11 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
     );
   }
 
-  const connected = members.filter(m => m.isActive && snapshots.some(s => s.memberId === m.id && (s.activeTasks?.length ?? 0) > 0));
-  const taskCount = snapshots.reduce((s, sn) => s + (sn.activeTasks?.length ?? 0), 0);
-  const blockerCount = snapshots.reduce((s, sn) => s + (sn.blockers?.length ?? 0), 0);
-  const busyCount = snapshots.filter(s => /busy|in_meeting/.test(s.calendarStatus ?? "")).length;
-  const hiddenCount = Math.max(0, members.filter(m => m.isActive).length - connected.length);
+  const connected = resolvedMems.filter(m => m.isActive && resolvedSnaps.some(s => s.memberId === m.id && (s.activeTasks?.length ?? 0) > 0)).slice(0, MAX_MEMBERS);
+  const taskCount = resolvedSnaps.reduce((s, sn) => s + (sn.activeTasks?.length ?? 0), 0);
+  const blockerCount = resolvedSnaps.reduce((s, sn) => s + (sn.blockers?.length ?? 0), 0);
+  const busyCount = resolvedSnaps.filter(s => /busy|in_meeting/.test(s.calendarStatus ?? "")).length;
+  const hiddenCount = Math.max(0, resolvedMems.filter(m => m.isActive).length - connected.length);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
