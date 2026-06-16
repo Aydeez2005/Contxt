@@ -21,12 +21,12 @@ import { api, type MemberSnapshot, type Member, type Integration } from "@/lib/a
 import { Spinner } from "@/components/kibo-ui/spinner";
 import { MOCK_SNAPSHOTS, MOCK_MEMBERS, MOCK_INTEGRATIONS } from "@/data/mock";
 
-// ── Colours ───────────────────────────────────────────────────────────────────
+// ── Palette ───────────────────────────────────────────────────────────────────
 
 const MEMBER_COLORS = [
-  "#6366f1", "#8b5cf6", "#ec4899", "#f59e0b",
-  "#10b981", "#3b82f6", "#ef4444", "#14b8a6",
-  "#f97316", "#84cc16", "#06b6d4", "#a855f7",
+  "#6366f1","#8b5cf6","#ec4899","#f59e0b",
+  "#10b981","#3b82f6","#ef4444","#14b8a6",
+  "#f97316","#84cc16","#06b6d4","#a855f7",
 ];
 
 const TOOL_COLORS: Record<string, string> = {
@@ -34,11 +34,9 @@ const TOOL_COLORS: Record<string, string> = {
   notion: "#191919", github: "#1F6FEB", gcal: "#1A73E8",
 };
 
-const TOOL_LABELS: Record<string, string> = {
-  gcal: "Calendar",
-};
+const TOOL_LABELS: Record<string, string> = { gcal: "Calendar" };
 
-// ── Invisible handle style (for edge routing only) ────────────────────────────
+// ── Invisible handles (edge routing only) ─────────────────────────────────────
 
 const HH: React.CSSProperties = {
   width: 1, height: 1, minWidth: 1, minHeight: 1,
@@ -63,110 +61,73 @@ function Handles() {
 // ── Member node ───────────────────────────────────────────────────────────────
 
 type MemberNodeData = {
-  name: string;
-  color: string;
-  taskCount: number;
-  hasBlocker: boolean;
-  calStatus: string;
+  name: string; color: string; taskCount: number;
+  hasBlocker: boolean; calStatus: string;
 };
 
 function MemberNode({ data }: NodeProps) {
   const d = data as MemberNodeData;
-  const initials = d.name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w: string) => w[0]?.toUpperCase() ?? "")
-    .join("");
-  const first = d.name.split(" ")[0] ?? d.name;
+  const parts = d.name.trim().split(/\s+/);
+  const initials = parts.slice(0, 2).map(w => w[0]?.toUpperCase() ?? "").join("");
   const busy = d.calStatus === "busy" || d.calStatus === "in_meeting";
 
   return (
     <>
       <Handles />
-      <div
-        style={{
-          background: "#ffffff",
-          border: `1.5px solid ${d.color}`,
-          borderRadius: 20,
-          padding: "4px 10px 4px 5px",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          boxShadow: `0 1px 8px ${d.color}1a, 0 0 0 3px ${d.color}0d`,
-          userSelect: "none",
-          cursor: "default",
-          position: "relative",
-          fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
-        }}
-      >
-        {/* blocker indicator */}
+      <div style={{
+        background: "#fff",
+        border: `2px solid ${d.color}`,
+        borderRadius: 24,
+        padding: "5px 12px 5px 6px",
+        display: "flex", alignItems: "center", gap: 7,
+        boxShadow: `0 2px 12px ${d.color}22, 0 0 0 4px ${d.color}0e`,
+        userSelect: "none", cursor: "default", position: "relative",
+        fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
+        minWidth: 110,
+      }}>
+        {/* blocker badge */}
         {d.hasBlocker && (
-          <div
-            style={{
-              position: "absolute",
-              top: -4,
-              right: -4,
-              width: 9,
-              height: 9,
-              borderRadius: "50%",
-              background: "#ef4444",
-              border: "2px solid #fff",
-            }}
-          />
+          <div style={{
+            position: "absolute", top: -5, right: -5,
+            width: 11, height: 11, borderRadius: "50%",
+            background: "#ef4444", border: "2px solid #fff",
+          }} />
         )}
         {/* avatar */}
-        <div
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: "50%",
-            background: d.color,
-            color: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 7.5,
-            fontWeight: 700,
-            flexShrink: 0,
-            letterSpacing: "0.03em",
-            position: "relative",
-          }}
-        >
+        <div style={{
+          width: 26, height: 26, borderRadius: "50%",
+          background: d.color, color: "#fff",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 9, fontWeight: 800, flexShrink: 0, letterSpacing: "0.03em",
+          position: "relative",
+        }}>
           {initials}
-          {/* busy dot */}
           {busy && (
-            <div
-              style={{
-                position: "absolute",
-                bottom: -1,
-                right: -1,
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#f59e0b",
-                border: "1.5px solid #fff",
-              }}
-            />
+            <div style={{
+              position: "absolute", bottom: -1, right: -1,
+              width: 7, height: 7, borderRadius: "50%",
+              background: "#f59e0b", border: "2px solid #fff",
+            }} />
           )}
         </div>
-        {/* name */}
-        <span style={{ color: "#1a1a1a", fontWeight: 500, fontSize: 10.5, whiteSpace: "nowrap" }}>
-          {first}
-        </span>
-        {/* task count badge */}
+        {/* name — full first + last */}
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.2 }}>
+          <span style={{ color: "#111", fontWeight: 600, fontSize: 11, whiteSpace: "nowrap" }}>
+            {parts[0]}
+          </span>
+          {parts[1] && (
+            <span style={{ color: "#555", fontWeight: 400, fontSize: 9.5, whiteSpace: "nowrap" }}>
+              {parts[1]}
+            </span>
+          )}
+        </div>
+        {/* task count */}
         {d.taskCount > 0 && (
-          <span
-            style={{
-              background: d.color,
-              color: "#fff",
-              borderRadius: 10,
-              padding: "0 5px",
-              fontSize: 8.5,
-              fontWeight: 700,
-              lineHeight: "15px",
-            }}
-          >
+          <span style={{
+            background: d.color, color: "#fff",
+            borderRadius: 10, padding: "1px 6px",
+            fontSize: 9, fontWeight: 700, marginLeft: 2,
+          }}>
             {d.taskCount}
           </span>
         )}
@@ -184,37 +145,23 @@ function ToolNode({ data }: NodeProps) {
   return (
     <>
       <Handles />
-      <div
-        style={{
-          background: d.color,
-          borderRadius: 11,
-          padding: "5px 13px",
-          color: "#fff",
-          fontSize: 10.5,
-          fontWeight: 600,
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          boxShadow: `0 4px 14px ${d.color}55, 0 1px 3px ${d.color}33`,
-          userSelect: "none",
-          cursor: "default",
-          fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
-          whiteSpace: "nowrap",
-          letterSpacing: "0.01em",
-        }}
-      >
-        <span>{d.name}</span>
+      <div style={{
+        background: d.color,
+        borderRadius: 12,
+        padding: "6px 14px",
+        color: "#fff", fontSize: 11, fontWeight: 700,
+        display: "flex", alignItems: "center", gap: 6,
+        boxShadow: `0 4px 16px ${d.color}55`,
+        userSelect: "none", cursor: "default",
+        fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
+        whiteSpace: "nowrap", letterSpacing: "0.01em",
+      }}>
+        {d.name}
         {d.memberCount > 0 && (
-          <span
-            style={{
-              background: "rgba(255,255,255,0.22)",
-              borderRadius: 8,
-              padding: "0 5px",
-              fontSize: 8.5,
-              fontWeight: 700,
-              lineHeight: "15px",
-            }}
-          >
+          <span style={{
+            background: "rgba(255,255,255,0.25)", borderRadius: 8,
+            padding: "0 5px", fontSize: 9, fontWeight: 700, lineHeight: "15px",
+          }}>
             {d.memberCount}
           </span>
         )}
@@ -229,59 +176,51 @@ type TaskNodeData = { label: string; color: string; status: string };
 
 function TaskNode({ data }: NodeProps) {
   const d = data as TaskNodeData;
-  const done = d.status === "done" || d.status === "Done" || d.status === "completed";
+  const done = /done|completed/i.test(d.status);
   return (
     <>
       <Handles />
-      <div
-        style={{
-          background: `${d.color}0d`,
-          border: `1px solid ${d.color}30`,
-          borderRadius: 6,
-          padding: "2px 8px",
-          fontSize: 9,
-          color: done ? "#aaa" : "#555",
-          fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
-          maxWidth: 140,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          userSelect: "none",
-          cursor: "default",
-          textDecoration: done ? "line-through" : "none",
-          opacity: done ? 0.6 : 1,
-        }}
-      >
+      <div style={{
+        background: `${d.color}12`,
+        border: `1px solid ${d.color}40`,
+        borderRadius: 6, padding: "2px 8px",
+        fontSize: 9, color: done ? "#aaa" : "#444",
+        fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
+        maxWidth: 150, overflow: "hidden",
+        textOverflow: "ellipsis", whiteSpace: "nowrap",
+        userSelect: "none", cursor: "default",
+        textDecoration: done ? "line-through" : "none",
+        opacity: done ? 0.55 : 1,
+      }}>
         {d.label}
       </div>
     </>
   );
 }
 
-// ── Node type registry — must be stable (module-level) ───────────────────────
+// ── Stable node type registry ──────────────────────────────────────────────────
 
-const NODE_TYPES: NodeTypes = {
-  member: MemberNode,
-  tool: ToolNode,
-  task: TaskNode,
-};
+const NODE_TYPES: NodeTypes = { member: MemberNode, tool: ToolNode, task: TaskNode };
 
 // ── Layout helpers ────────────────────────────────────────────────────────────
 
-function ringPositions(cx: number, cy: number, r: number, n: number, offset = -Math.PI / 2) {
+function ring(cx: number, cy: number, r: number, n: number, startAngle = -Math.PI / 2) {
+  if (n === 0) return [];
   return Array.from({ length: n }, (_, i) => {
-    const a = (i / n) * 2 * Math.PI + offset;
+    const a = startAngle + (i / n) * 2 * Math.PI;
     return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r };
   });
 }
 
-// Deterministic jitter — no Math.random so layout is stable across renders
-function djitter(seed: number, range: number) {
+// Deterministic jitter (no Math.random → stable across renders)
+function dj(seed: number, range: number) {
   const v = Math.sin(seed * 9301 + 49297) * 43758.5453;
   return (v - Math.floor(v) - 0.5) * range * 2;
 }
 
 // ── Graph builder ─────────────────────────────────────────────────────────────
+
+const MAX_MEMBERS = 12;
 
 function buildGraph(
   members: Member[],
@@ -291,168 +230,150 @@ function buildGraph(
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  const active = members.filter((m) => m.isActive);
-  const snapMap = new Map(snapshots.map((s) => [s.memberId, s]));
+  const snapMap = new Map(snapshots.map(s => [s.memberId, s]));
 
-  // Collect tools in use
+  // Only show active members who have at least one task, cap at MAX_MEMBERS
+  const connected = members
+    .filter(m => m.isActive && (snapMap.get(m.id)?.activeTasks?.length ?? 0) > 0)
+    .slice(0, MAX_MEMBERS);
+
+  // Collect tools referenced by those members
   const toolSet = new Set<string>();
-  for (const s of snapshots) for (const t of s.activeTasks ?? []) toolSet.add(t.tool);
+  for (const m of connected) {
+    for (const t of snapMap.get(m.id)?.activeTasks ?? []) toolSet.add(t.tool);
+  }
   for (const i of integrations) toolSet.add(i.service);
   const tools = [...toolSet];
 
-  const CX = 560, CY = 360;
-  const TOOL_R = 285;
+  const CX = 540, CY = 360;
+  const MEMBER_R = 195;
+  const TOOL_R = 345;
 
-  // Per-tool member count (for badge)
-  const toolMemberCount: Record<string, number> = {};
-  for (const s of snapshots) {
+  // Per-tool member count (badge on tool node)
+  const toolMC: Record<string, number> = {};
+  for (const m of connected) {
     const seen = new Set<string>();
-    for (const t of s.activeTasks ?? []) {
-      if (!seen.has(t.tool)) {
-        toolMemberCount[t.tool] = (toolMemberCount[t.tool] ?? 0) + 1;
-        seen.add(t.tool);
-      }
+    for (const t of snapMap.get(m.id)?.activeTasks ?? []) {
+      if (!seen.has(t.tool)) { toolMC[t.tool] = (toolMC[t.tool] ?? 0) + 1; seen.add(t.tool); }
     }
   }
 
-  // Tool positions: outer ring with slight radial jitter so it's not a perfect circle
-  const toolBaseRing = ringPositions(CX, CY, TOOL_R, tools.length);
+  // Tool positions — evenly on outer ring, slight radial jitter
+  const toolBaseRing = ring(CX, CY, TOOL_R, tools.length);
   const toolPos = toolBaseRing.map((p, i) => {
-    const jitter = djitter(i * 7 + 3, 28);
-    const dx = p.x - CX, dy = p.y - CY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const nd = dist + jitter;
-    return { x: CX + (dx / dist) * nd, y: CY + (dy / dist) * nd };
+    const j = dj(i * 7 + 2, 22);
+    const dx = p.x - CX, dy = p.y - CY, dist = Math.sqrt(dx*dx+dy*dy);
+    const nd = dist + j;
+    return { x: CX + (dx/dist)*nd, y: CY + (dy/dist)*nd };
   });
 
-  // ── Tool nodes (tool badge: ~96×27px → offset -48, -13)
+  // Tool nodes (approx 100×28 → offset -50,-14)
   tools.forEach((tool, i) => {
     const color = TOOL_COLORS[tool] ?? "#888";
     const pos = toolPos[i];
-    const label = TOOL_LABELS[tool] ?? (tool.charAt(0).toUpperCase() + tool.slice(1));
     nodes.push({
-      id: `tool-${tool}`,
-      type: "tool",
-      position: { x: pos.x - 48, y: pos.y - 13 },
-      data: { name: label, color, memberCount: toolMemberCount[tool] ?? 0 },
+      id: `tool-${tool}`, type: "tool",
+      position: { x: pos.x - 50, y: pos.y - 14 },
+      data: { name: TOOL_LABELS[tool] ?? tool.charAt(0).toUpperCase()+tool.slice(1), color, memberCount: toolMC[tool] ?? 0 },
       draggable: true,
     });
   });
 
-  // ── Member nodes
-  // Members with tasks: pull toward weighted centroid of their tools
-  // Members without tasks: small inner ring
-  const idleMembers = active.filter(
-    (m) => (snapMap.get(m.id)?.activeTasks?.length ?? 0) === 0
-  );
-  const idleRing = ringPositions(CX, CY, 65, Math.max(idleMembers.length, 1));
-  let idleIdx = 0;
+  // Member positions — evenly spaced on inner ring
+  const memberRing = ring(CX, CY, MEMBER_R, connected.length);
 
-  active.forEach((member, mi) => {
+  connected.forEach((member, mi) => {
     const color = MEMBER_COLORS[mi % MEMBER_COLORS.length];
-    const snap = snapMap.get(member.id);
-    const tasks = snap?.activeTasks ?? [];
-    const hasBlocker = (snap?.blockers?.length ?? 0) > 0;
-    const calStatus = snap?.calendarStatus ?? "available";
+    const snap = snapMap.get(member.id)!;
+    const tasks = snap.activeTasks ?? [];
+    const hasBlocker = (snap.blockers?.length ?? 0) > 0;
+    const mPos = memberRing[mi];
     const mId = `member-${member.id}`;
 
-    let mPos: { x: number; y: number };
-
-    const usedTools = [...new Set(tasks.map((t) => t.tool).filter((t) => tools.includes(t)))];
-
-    if (usedTools.length > 0) {
-      // Centroid of used tool positions
-      const pts = usedTools.map((t) => toolPos[tools.indexOf(t)]);
-      const cx2 = pts.reduce((s, p) => s + p.x, 0) / pts.length;
-      const cy2 = pts.reduce((s, p) => s + p.y, 0) / pts.length;
-
-      // Pull toward center at ~35-40% of the way from center to tool centroid
-      const dx = cx2 - CX, dy = cy2 - CY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const angle = Math.atan2(dy, dx);
-      // Add angular jitter per member to avoid stacking
-      const angleJitter = djitter(mi * 19 + 11, 0.28);
-      const targetDist = 110 + djitter(mi * 7 + 5, 32);
-
-      mPos = {
-        x: CX + Math.cos(angle + angleJitter) * Math.max(55, targetDist),
-        y: CY + Math.sin(angle + angleJitter) * Math.max(55, targetDist),
-      };
-    } else {
-      mPos = idleRing[idleIdx++ % idleRing.length];
-    }
-
-    // member card: ~130×28px → offset -65, -14
+    // Member node (approx 150×36 → offset -75,-18)
     nodes.push({
-      id: mId,
-      type: "member",
-      position: { x: mPos.x - 65, y: mPos.y - 14 },
-      data: { name: member.displayName ?? member.telegramUsername ?? "?", color, taskCount: tasks.length, hasBlocker, calStatus },
+      id: mId, type: "member",
+      position: { x: mPos.x - 75, y: mPos.y - 18 },
+      data: {
+        name: member.displayName ?? member.telegramUsername ?? "?",
+        color, taskCount: tasks.length, hasBlocker,
+        calStatus: snap.calendarStatus ?? "available",
+      },
       draggable: true,
     });
 
-    if (!snap) return;
+    // Task nodes — orbit close to member, fanned toward their tool
+    // Group tasks by tool so we can spread them within each tool's direction
+    const byTool = new Map<string, typeof tasks>();
+    for (const t of tasks) {
+      if (!byTool.has(t.tool)) byTool.set(t.tool, []);
+      byTool.get(t.tool)!.push(t);
+    }
 
-    // ── Task nodes: scattered between member and tool
-    tasks.forEach((task, ti) => {
-      const toolIdx = tools.indexOf(task.tool);
+    let globalTaskIdx = 0;
+    byTool.forEach((toolTasks, toolName) => {
+      const toolIdx = tools.indexOf(toolName);
       if (toolIdx === -1) return;
       const tPos = toolPos[toolIdx];
-      const toolColor = TOOL_COLORS[task.tool] ?? "#888";
+      const toolColor = TOOL_COLORS[toolName] ?? "#888";
 
-      const t = 0.36 + (ti % 3) * 0.11;
-      const perp = Math.atan2(tPos.y - mPos.y, tPos.x - mPos.x) + Math.PI / 2;
-      const jitter = djitter(mi * 100 + ti * 17 + 3, 20);
-      const tx = mPos.x + (tPos.x - mPos.x) * t + Math.cos(perp) * jitter;
-      const ty = mPos.y + (tPos.y - mPos.y) * t + Math.sin(perp) * jitter;
+      // Angle from member toward tool
+      const baseAngle = Math.atan2(tPos.y - mPos.y, tPos.x - mPos.x);
+      const ORBIT_R = 72; // distance from member center to task node center
+      const SPREAD = 0.22; // radians between tasks for the same tool
 
-      const taskNodeId = `task-${member.id}-${task.id}`;
-      // task pill: ~120×16px → offset -60, -8
-      nodes.push({
-        id: taskNodeId,
-        type: "task",
-        position: { x: tx - 60, y: ty - 8 },
-        data: { label: task.title, color: toolColor, status: task.status },
-        draggable: true,
-      });
+      toolTasks.forEach((task, ti) => {
+        const totalSpread = (toolTasks.length - 1) * SPREAD;
+        const angleOffset = -totalSpread / 2 + ti * SPREAD;
+        const taskAngle = baseAngle + angleOffset;
 
-      edges.push({
-        id: `em-${mId}-${taskNodeId}`,
-        source: mId,
-        target: taskNodeId,
-        type: "smoothstep",
-        style: { stroke: color, strokeWidth: 1.2, opacity: 0.3 },
-      });
-      edges.push({
-        id: `et-${taskNodeId}-${task.tool}`,
-        source: taskNodeId,
-        target: `tool-${task.tool}`,
-        type: "smoothstep",
-        style: { stroke: toolColor, strokeWidth: 1.2, opacity: 0.28 },
+        const tx = mPos.x + Math.cos(taskAngle) * ORBIT_R;
+        const ty = mPos.y + Math.sin(taskAngle) * ORBIT_R;
+        const taskId = `task-${member.id}-${task.id}`;
+
+        // task pill approx 130×16 → offset -65,-8
+        nodes.push({
+          id: taskId, type: "task",
+          position: { x: tx - 65, y: ty - 8 },
+          data: { label: task.title, color: toolColor, status: task.status },
+          draggable: true,
+        });
+
+        // member → task (faint member-colored)
+        edges.push({
+          id: `em-${mId}-${taskId}`,
+          source: mId, target: taskId,
+          type: "smoothstep",
+          style: { stroke: color, strokeWidth: 1, opacity: 0.25 },
+        });
+
+        // task → tool (tool-colored)
+        edges.push({
+          id: `et-${taskId}-${toolName}`,
+          source: taskId, target: `tool-${toolName}`,
+          type: "smoothstep",
+          style: { stroke: toolColor, strokeWidth: 1, opacity: 0.3 },
+        });
+
+        globalTaskIdx++;
       });
     });
 
-    // ── Blocker edges: member → member (red dashed with label)
+    // Blocker edges — member → member
     for (const blocker of snap.blockers ?? []) {
       const desc = blocker.description.toLowerCase();
-      active.forEach((other) => {
+      connected.forEach(other => {
         if (other.id === member.id) return;
         const firstName = (other.displayName ?? "").toLowerCase().split(" ")[0];
         if (firstName && desc.includes(firstName)) {
           edges.push({
             id: `blocker-${member.id}-${other.id}`,
-            source: mId,
-            target: `member-${other.id}`,
+            source: mId, target: `member-${other.id}`,
             type: "smoothstep",
             markerEnd: { type: MarkerType.ArrowClosed, width: 12, height: 12, color: "#ef4444" },
-            style: { stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "4 3", opacity: 0.7 },
+            style: { stroke: "#ef4444", strokeWidth: 1.5, strokeDasharray: "4 3", opacity: 0.75 },
             label: "blocked by",
-            labelStyle: {
-              fontSize: 8,
-              fill: "#ef4444",
-              fontFamily: "var(--font-dm-sans, system-ui, sans-serif)",
-              fontWeight: 500,
-            },
+            labelStyle: { fontSize: 8, fill: "#ef4444", fontFamily: "var(--font-dm-sans,sans-serif)", fontWeight: 600 },
             labelBgStyle: { fill: "#fff", opacity: 0.85 },
             labelBgPadding: [3, 5] as [number, number],
             labelBgBorderRadius: 4,
@@ -486,8 +407,8 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
 
   useEffect(() => {
     if (loading || snapsLoading) return;
-    const hasData = snapshots.some((s) => (s.activeTasks?.length ?? 0) > 0);
-    const activeMembers = members.filter((m) => m.isActive);
+    const hasData = snapshots.some(s => (s.activeTasks?.length ?? 0) > 0);
+    const activeMembers = members.filter(m => m.isActive);
     const resolvedMembers = activeMembers.length > 0 ? activeMembers : MOCK_MEMBERS;
     const resolvedIntegrations = integrations.length > 0 ? integrations : MOCK_INTEGRATIONS;
     const resolvedSnapshots = hasData
@@ -509,86 +430,49 @@ export default function GraphPage({ params }: { params: Promise<{ slug: string }
     );
   }
 
+  const connected = members.filter(m => m.isActive && snapshots.some(s => s.memberId === m.id && (s.activeTasks?.length ?? 0) > 0));
   const taskCount = snapshots.reduce((s, sn) => s + (sn.activeTasks?.length ?? 0), 0);
   const blockerCount = snapshots.reduce((s, sn) => s + (sn.blockers?.length ?? 0), 0);
-  const busyCount = snapshots.filter((s) => s.calendarStatus === "busy" || s.calendarStatus === "in_meeting").length;
+  const busyCount = snapshots.filter(s => /busy|in_meeting/.test(s.calendarStatus ?? "")).length;
+  const hiddenCount = Math.max(0, members.filter(m => m.isActive).length - connected.length);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-      {/* stats bar */}
-      <div
-        style={{
-          display: "flex",
-          gap: 12,
-          fontSize: 11.5,
-          color: "var(--ink-30)",
-          fontFamily: "var(--font-dm-sans)",
-          alignItems: "center",
-        }}
-      >
-        <span>{members.filter((m) => m.isActive).length} members</span>
+      <div style={{
+        display: "flex", gap: 12, fontSize: 11.5,
+        color: "var(--ink-30)", fontFamily: "var(--font-dm-sans)",
+        alignItems: "center",
+      }}>
+        <span>{connected.length} members shown</span>
+        {hiddenCount > 0 && <span style={{ color: "var(--ink-20)" }}>· {hiddenCount} without active tasks hidden</span>}
         <span>·</span>
         <span>{taskCount} tasks</span>
         <span>·</span>
         <span>{integrations.length} tools</span>
-        {blockerCount > 0 && (
-          <>
-            <span>·</span>
-            <span style={{ color: "#ef4444" }}>{blockerCount} blocker{blockerCount > 1 ? "s" : ""}</span>
-          </>
-        )}
-        {busyCount > 0 && (
-          <>
-            <span>·</span>
-            <span style={{ color: "#f59e0b" }}>{busyCount} in meeting</span>
-          </>
-        )}
-        {/* legend */}
-        <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center", opacity: 0.6 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#ef4444", display: "inline-block" }} />
-            blocker
-          </span>
-          <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#f59e0b", display: "inline-block" }} />
-            in meeting
-          </span>
+        {blockerCount > 0 && <><span>·</span><span style={{ color: "#ef4444" }}>{blockerCount} blocker{blockerCount > 1 ? "s" : ""}</span></>}
+        {busyCount > 0 && <><span>·</span><span style={{ color: "#f59e0b" }}>{busyCount} in meeting</span></>}
+        <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center", opacity: 0.5, fontSize: 11 }}>
+          <span><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#ef4444", marginRight:3 }} />blocker</span>
+          <span><span style={{ display:"inline-block", width:8, height:8, borderRadius:"50%", background:"#f59e0b", marginRight:3 }} />in meeting</span>
         </div>
       </div>
 
-      {/* graph canvas */}
-      <div
-        style={{
-          height: "calc(100vh - 148px)",
-          borderRadius: 16,
-          overflow: "hidden",
-          border: "1px solid var(--rule)",
-          background: "#f8f8f6",
-        }}
-      >
+      <div style={{
+        height: "calc(100vh - 148px)",
+        borderRadius: 16, overflow: "hidden",
+        border: "1px solid var(--rule)", background: "#f8f8f6",
+      }}>
         <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
+          nodes={nodes} edges={edges}
+          onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           nodeTypes={NODE_TYPES}
-          fitView
-          fitViewOptions={{ padding: 0.12 }}
+          fitView fitViewOptions={{ padding: 0.13 }}
           proOptions={{ hideAttribution: true }}
-          nodesDraggable
-          minZoom={0.25}
-          maxZoom={3}
+          nodesDraggable minZoom={0.25} maxZoom={3}
           defaultEdgeOptions={{ type: "smoothstep" }}
         >
           <Background color="#e2e1dd" gap={28} size={1} />
-          <Controls
-            showInteractive={false}
-            style={{
-              boxShadow: "none",
-              border: "1px solid var(--rule)",
-              borderRadius: 10,
-            }}
-          />
+          <Controls showInteractive={false} style={{ boxShadow: "none", border: "1px solid var(--rule)", borderRadius: 10 }} />
         </ReactFlow>
       </div>
     </div>
