@@ -24,6 +24,17 @@ export async function buildMemberSnapshot(
   const cached = await redis.get<MemberSnapshot>(snapshotCacheKey(memberId));
   if (cached) return cached;
 
+  // If the snapshot has a future updatedAt it was manually pinned — don't rebuild it
+  const [pinned] = await db
+    .select()
+    .from(memberSnapshots)
+    .where(and(eq(memberSnapshots.memberId, memberId), eq(memberSnapshots.orgId, ctx.org.id)))
+    .limit(1);
+  if (pinned && new Date(pinned.updatedAt!).getTime() > Date.now()) {
+    await redis.set(snapshotCacheKey(memberId), pinned, { ex: SNAPSHOT_TTL });
+    return pinned;
+  }
+
   const [member] = await db
     .select()
     .from(members)
