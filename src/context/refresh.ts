@@ -24,6 +24,9 @@ export function startRefreshLoop() {
           .from(orgIntegrations)
           .where(eq(orgIntegrations.orgId, org.id));
 
+        // Nothing to refresh if no integrations are connected
+        if (integrations.length === 0) continue;
+
         const activeMembers = orgMembers.filter((m) => m.isActive);
 
         await Promise.allSettled(

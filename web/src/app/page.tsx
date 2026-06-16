@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Jira, Linear, Slack, Notion, Github, GoogleCalendar } from "@thesvg/react";
+import { Jira, Linear, Slack, Notion as NotionBase, Github, GoogleCalendar } from "@thesvg/react";
+
+// @thesvg/react Notion has fill:none on the SVG root but its main path has no fill set,
+// so the letterform is invisible. Override by wrapping with a black fill.
+function Notion(props: React.SVGProps<SVGSVGElement>) {
+  return <NotionBase {...props} fill="#000" />;
+}
 
 /* ─── Scroll-reveal ─────────────────────────────────────────────── */
 function Reveal({
